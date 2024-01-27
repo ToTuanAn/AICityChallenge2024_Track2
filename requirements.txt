@@ -2,7 +2,7 @@ torchvision==0.14.1
 tqdm==4.62.3
 joblib==1.1.0
 scipy==1.7.3
-numpy==1.21.6
+numpy==1.26.3
 colorlog==6.6.0
 regex==2023.6.3
 transformers==4.28.0
@@ -19,8 +19,9 @@ python_hostlist==1.21
 tensorboardX==2.1
 langdetect==1.0.9
 genbit==2.2.0.0
+pycocoevalcap==1.2
 opencv_python
-PyYAML
+PyYAML==6.0.1
 scikit_learn
 pandas
 h5py
