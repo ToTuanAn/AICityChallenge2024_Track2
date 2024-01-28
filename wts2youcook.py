@@ -47,7 +47,8 @@ def convert_wts_to_youcook_format(video_filepath, caption_filepath):
 
     pedestrian_data = {
         "duration": round(duration, 2),
-        "fps": round(fps, 2),
+        "fps": 1,
+        "original_fps": round(fps, 2),
         "timestamps": [],
         "sentences": [],
     }
@@ -127,11 +128,15 @@ if __name__ == "__main__":
                     perdestrian_data, vehicle_data = convert_wts_to_youcook_format(
                         video_filepath, caption_filepath
                     )
-                    break
-                break
 
-            split_annotation_data["pedestrian"][video_folder] = perdestrian_data
-            split_annotation_data["vehicle"][video_folder] = vehicle_data
+                    video_name = video_filename.split(".")[0]
+                    split_annotation_data["pedestrian"][video_name] = perdestrian_data
+                    split_annotation_data["vehicle"][video_name] = vehicle_data
+            #         break
+            #     break
+
+            # split_annotation_data["pedestrian"][video_folder] = perdestrian_data
+            # split_annotation_data["vehicle"][video_folder] = vehicle_data
 
         for obj in ["pedestrian", "vehicle"]:
             output_filepath = os.path.join(OUTPUT_DIR, f"{obj}_{split}.json")
