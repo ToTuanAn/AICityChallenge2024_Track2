@@ -120,6 +120,10 @@ def get_args_parser():
         "--wts_test_json_path",
         default=os.path.join(DATA_DIR, name2folder["wts"], "pedestrian_val.json"),
     )
+    parser.add_argument(
+        "--wts_subtitles_path",
+        default=os.path.join(SSD_DIR, "allwts_asr"),
+    )
 
     # Training hyper-parameters
     parser.add_argument(
