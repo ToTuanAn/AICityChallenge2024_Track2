@@ -13,7 +13,6 @@ for video_subpath in glob.glob(f"{VIDEO_PATH}/{TRAIN_OR_VAL}/*"):
     for video in glob.glob(f"{video_subpath}/{PREDESTRIAN_OR_VEHICLE}/*.mp4"):
         output_path = f"{FEATURE_PATH}/{TRAIN_OR_VAL}/{video_subpath.split('/')[-1]}/{PREDESTRIAN_OR_VEHICLE}"
         os.makedirs(output_path, exist_ok=True)
-        open(f"{output_path}/{video.split('/')[-1][:-4]}.npy", "w")
 
         feature_path = f"{output_path}/{video.split('/')[-1][:-4]}.npy"
         arr_jsonl.append({"video_path" : video, "feature_path" : feature_path})

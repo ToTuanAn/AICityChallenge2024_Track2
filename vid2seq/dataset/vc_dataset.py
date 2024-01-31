@@ -271,6 +271,17 @@ def build_videocaptioning_dataset(dataset_name, split, args):
             raise NotImplementedError
         features_path = args.chapters_features_path
         subtitles_path = args.chapters_subtitles_path
+    elif dataset_name == "wts":
+        if split == "train":
+            json_path = args.wts_train_json_path
+        elif split == "val":
+            json_path = args.wts_val_json_path
+        elif split == "test":
+            json_path = args.wts_test_json_path
+        else:
+            raise NotImplementedError
+        features_path = args.wts_features_path
+        subtitles_path = args.wts_subtitles_path
     else:
         raise NotImplementedError
     return VideoCaptioning_Dataset(json_path=json_path,

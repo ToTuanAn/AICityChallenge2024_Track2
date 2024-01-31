@@ -4,13 +4,14 @@ import os
 PRESAVE_DIR = "TOFILL"
 MODEL_DIR = "TOFILL"
 DATA_DIR = "data"
-SSD_DIR = "TOFILL"
+SSD_DIR = "data"
 NLTK_FOLDER = "TOFILL"
 name2folder = {
     "youcook": "YouCook2",
     "htm": "howto100m",
     "chapters": "AllChapters",
-    "vitt": "ViTT"
+    "vitt": "ViTT",
+    "wts" : "wts"
 }
 
 
@@ -101,6 +102,23 @@ def get_args_parser():
     parser.add_argument(
         "--chapters_subtitles_path",
         default=os.path.join(SSD_DIR, "allchapters_asr"),
+    )
+
+    parser.add_argument(
+        "--wts_features_path",
+        default=os.path.join(SSD_DIR, "CLIP_FEATURES"),
+    )
+    parser.add_argument(
+        "--wts_train_json_path",
+        default=os.path.join(DATA_DIR, name2folder["wts"], "pedestrian_train.json"),
+    )
+    parser.add_argument(
+        "--wts_val_json_path",
+        default=os.path.join(DATA_DIR, name2folder["wts"], "pedestrian_val.json"),
+    )
+    parser.add_argument(
+        "--wts_test_json_path",
+        default=os.path.join(DATA_DIR, name2folder["wts"], "pedestrian_val.json"),
     )
 
     # Training hyper-parameters

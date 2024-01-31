@@ -52,7 +52,7 @@ class VideoLoader(Dataset):
             print("Decoding video: {}".format(video_path))
             try:
                 h, w, fr = self._get_video_dim(video_path)
-                print(h, w, fr)
+                #print(h, w, fr)
             except:
                 print("ffprobe failed at: {}".format(video_path))
                 return {
@@ -68,7 +68,7 @@ class VideoLoader(Dataset):
                     "output": output_file,
                 }
             height, width = self._get_output_dim(h, w)
-            print(height, width)
+            #print(height, width)
 
             try:
                 cmd = (
@@ -95,7 +95,7 @@ class VideoLoader(Dataset):
             video = np.frombuffer(out, np.uint8).reshape([-1, height, width, 3])
             video = th.from_numpy(video.astype("float32"))
             video = video.permute(0, 3, 1, 2)
-            print("Video shape: ", video.shape)
+            #print("Video shape: ", video.shape)
         else:
             video = th.zeros(1)
 

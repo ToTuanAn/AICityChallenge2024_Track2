@@ -30,7 +30,7 @@ parser.add_argument(
 parser.add_argument(
     "--num_decoding_thread",
     type=int,
-    default=3,
+    default=1,
     help="number of parallel threads for video decoding",
 )
 parser.add_argument(
@@ -46,9 +46,9 @@ args = parser.parse_args()
 
 dataset = VideoLoader(
     args.csv,
-    framerate=30,  # one feature per second max
-    size=336,
-    centercrop=True,
+    framerate=10,  # one feature per second max
+    size=(336,336),
+    centercrop=False,
 )
 n_dataset = len(dataset)
 sampler = RandomSequenceSampler(n_dataset, 10)
