@@ -165,7 +165,7 @@ class VideoCaptioning_Dataset(Dataset):
 
         # get subtitles
         if (self.subs is not None and video_id in self.subs) or (self.subs_path is not None and os.path.exists(os.path.join(self.subs_path, video_id + '.pkl'))):
-            if (self.subs is not None and video_idin self.subs):
+            if (self.subs is not None and video_id in self.subs):
                 sub = self.subs[video_id]
             else:
                 sub = pickle.load(open(os.path.join(self.subs_path, video_id + '.pkl'), 'rb'))
