@@ -153,7 +153,7 @@ class VideoCaptioning_Dataset(Dataset):
     def __getitem__(self, idx):
         video_id = self.vids[idx]
         annotations = self.data[video_id]
-        video = self._get_video(video_id[-11:])
+        video = self._get_video(video_id)
         if self.training:
             idx = random.randint(0, len(annotations["sentences"]) - 1)
             sentence = annotations["sentences"][idx]
@@ -164,11 +164,11 @@ class VideoCaptioning_Dataset(Dataset):
             video = th.stack([self.pad_video(video[int(x[0]): int(x[1]) + 1]) for x in annotations["timestamps"]])
 
         # get subtitles
-        if (self.subs is not None and video_id[-11:] in self.subs) or (self.subs_path is not None and os.path.exists(os.path.join(self.subs_path, video_id + '.pkl'))):
-            if (self.subs is not None and video_id[-11:] in self.subs):
-                sub = self.subs[video_id[-11:]]
+        if (self.subs is not None and video_id in self.subs) or (self.subs_path is not None and os.path.exists(os.path.join(self.subs_path, video_id + '.pkl'))):
+            if (self.subs is not None and video_idin self.subs):
+                sub = self.subs[video_id]
             else:
-                sub = pickle.load(open(os.path.join(self.subs_path, video_id[-11:] + '.pkl'), 'rb'))
+                sub = pickle.load(open(os.path.join(self.subs_path, video_id + '.pkl'), 'rb'))
 
             # keep only those in timestamps
             if self.training:
@@ -203,7 +203,7 @@ class VideoCaptioning_Dataset(Dataset):
             "output_text": caption,
         }
         if self.vid2path is not None:
-            raw_video = self._get_raw(self.vid2path.get(video_id[-11:], None))
+            raw_video = self._get_raw(self.vid2path.get(video_id, None))
             if self.training:
                 raw_video = self.pad_raw_video(raw_video[int(start): int(end) + 1])
             else:
