@@ -87,7 +87,7 @@ if __name__ == "__main__":
 
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-    for split in os.listdir(VIDEOS_DIR):
+    for split in sorted(os.listdir(VIDEOS_DIR)):
         videos_split_dir = os.path.join(VIDEOS_DIR, split)
         caption_split_dir = os.path.join(CAPTION_DIR, split)
         # bbox_split_dir = os.path.join(BBOX_DIR, split)
@@ -100,22 +100,28 @@ if __name__ == "__main__":
         if not os.path.isdir(videos_split_dir):
             continue
 
-        for video_folder in os.listdir(videos_split_dir):
+        for video_folder in sorted(os.listdir(videos_split_dir)):
             print(f"Processing {video_folder} ...")
             video_dir = os.path.join(videos_split_dir, video_folder)
             if not os.path.isdir(video_dir):
                 continue
 
-            for view in os.listdir(video_dir):
+            for view in sorted(os.listdir(video_dir)):
                 view_dir = os.path.join(video_dir, view)
                 if not os.path.isdir(view_dir):
                     continue
 
-                for video_filename in os.listdir(view_dir):
+                if view.lower() == "overhead_view":
+                    is_pedestrian = True
+                else:
+                    is_pedestrian = False
+
+                for video_filename in sorted(os.listdir(view_dir)):
                     video_filepath = os.path.join(view_dir, video_filename)
                     if not video_filename.lower().endswith(".mp4"):
                         print("Skipping", video_filepath)
                         continue
+
                     print("Processing", video_filepath)
                     caption_filename = video_filename.split(".")[0].split("_")[:4]
                     caption_filename += ["caption"]
@@ -125,13 +131,18 @@ if __name__ == "__main__":
                     )
                     print("Caption file:", caption_filepath)
 
-                    perdestrian_data, vehicle_data = convert_wts_to_youcook_format(
+                    pedestrian_data, vehicle_data = convert_wts_to_youcook_format(
                         video_filepath, caption_filepath
                     )
 
-                    video_name = video_filename.split(".")[0]
-                    split_annotation_data["pedestrian"][video_name] = perdestrian_data
-                    split_annotation_data["vehicle"][video_name] = vehicle_data
+                    video_name = video_filename.split(".")[:-1]
+                    video_name = ".".join(video_name)
+                    if is_pedestrian:
+                        split_annotation_data["pedestrian"][
+                            video_name
+                        ] = pedestrian_data
+                    else:
+                        split_annotation_data["vehicle"][video_name] = vehicle_data
             #         break
             #     break
 
