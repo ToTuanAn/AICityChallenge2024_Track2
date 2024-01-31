@@ -317,7 +317,7 @@ def main(args):
                 print("Start training")
             start_time = time.time()
             best_epoch = args.start_epoch
-            best_acc = 0
+            best_acc = -1
             for epoch in range(args.start_epoch, args.epochs):
                 if dist.is_main_process():
                     print(f"Starting epoch {epoch}")
