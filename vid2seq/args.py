@@ -106,7 +106,7 @@ def get_args_parser():
 
     parser.add_argument(
         "--wts_features_path",
-        default=os.path.join(SSD_DIR, "CLIP_FEATURES"),
+        default=os.path.join(SSD_DIR, name2folder["wts"], "CLIP_FEATURES"),
     )
     parser.add_argument(
         "--wts_train_json_path",
@@ -122,7 +122,7 @@ def get_args_parser():
     )
     parser.add_argument(
         "--wts_subtitles_path",
-        default=os.path.join(SSD_DIR, "allwts_asr"),
+        default=None,
     )
 
     # Training hyper-parameters
