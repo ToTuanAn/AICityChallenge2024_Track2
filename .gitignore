@@ -4,4 +4,5 @@ backbone/
 data/
 TOFILL/
 datasets/
-
+*wandb*
+*.out

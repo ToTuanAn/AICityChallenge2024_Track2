@@ -375,5 +375,19 @@ def get_args_parser():
         type=str,
         help="path to a ASR example for demo",
     )
+    
+    # wandb parameters
+    parser.add_argument(
+        "--wandb_project",
+        default=None, type=str, help="wandb project name"
+    )
+    parser.add_argument(
+        "--wandb_entity",
+        default=None, type=str, help="wandb entity name"
+    )
+    parser.add_argument(
+        "--wandb_name",
+        default=None, type=str, help="wandb run name"
+    )
 
     return parser

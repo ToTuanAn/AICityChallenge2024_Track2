@@ -21,7 +21,11 @@ from util.misc import adjust_learning_rate
 from util.metrics import MetricLogger
 from dvc_eval import COCOEvalCap
 from transformers import LlamaForCausalLM, LlamaTokenizer, Blip2Processor, Blip2ForConditionalGeneration
+import wandb
 
+def wandb_log(log_dict):
+    if wandb.run is not None and dist.is_main_process():
+        wandb.log(log_dict)
 
 def train_one_epoch(
     model: torch.nn.Module,
@@ -80,6 +84,7 @@ def train_one_epoch(
 
         metric_logger.update(loss=loss_value)
         metric_logger.update(lr=optimizer.param_groups[0]["lr"])
+        wandb_log({'loss': loss_value, 'lr': optimizer.param_groups[0]["lr"]})
     # gather the stats from all processes
     metric_logger.synchronize_between_processes()
     print("Averaged stats:", metric_logger)
@@ -183,6 +188,9 @@ def main(args):
         if args.save_dir and not (os.path.isdir(args.save_dir)):
             os.makedirs(os.path.join(args.save_dir), exist_ok=True)
         print(args)
+        
+        if args.wandb_project:
+            wandb.init(project=args.wandb_project, entity=args.wandb_entity, name=args.wandb_name, config=args)
 
     device = torch.device(args.device)
 
@@ -378,6 +386,7 @@ def main(args):
                     "epoch": epoch,
                     "n_parameters": n_parameters,
                 }
+                wandb_log(log_stats)
 
                 if args.save_dir and dist.is_main_process():
                     with open(os.path.join(args.save_dir, "log.txt"), "a") as f:
@@ -416,6 +425,8 @@ def main(args):
             args=args,
             split="test",
         )
+        out = {f'test_{k}':v for k, v in out.items()}
+        wandb_log(out)
 
         if args.save_dir and dist.is_main_process():
             json.dump(
