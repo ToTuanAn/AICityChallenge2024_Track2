@@ -360,9 +360,14 @@ def main(args):
                         val_stats.update(
                             {item.dataset_name + "_" + k: v for k, v in out.items()}
                         )
-                        if out["CIDEr"] > best_acc:
+                        cider = out["CIDEr"]
+                        bleu4 = out["Bleu_4"]
+                        meteor = out["METEOR"]
+                        rouge = out["ROUGE_L"]
+                        cur_acc = (cider + bleu4 + meteor + rouge) / 4
+                        if cur_acc > best_acc:
                             best_epoch = epoch
-                            best_acc = out["CIDEr"]
+                            best_acc = cur_acc
 
                             if dist.is_main_process() and args.save_dir:
                                 checkpoint_path = os.path.join(
