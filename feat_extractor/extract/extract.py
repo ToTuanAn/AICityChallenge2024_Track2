@@ -42,6 +42,10 @@ parser.add_argument(
 parser.add_argument(
     "--feature_dim", type=int, default=768, help="output video feature dimension"
 )
+
+parser.add_argument(
+    "--framerate", type=int, default=10, help="framerate"
+)
 args = parser.parse_args()
 
 dataset = VideoLoader(
