@@ -9,7 +9,7 @@ PREDESTRIAN_OR_VEHICLE_CHOICE = ["overhead_view", "vehicle_view"]
 
 arr_jsonl = []
 
-for VIDEO_PATH in TRAIN_OR_VAL_CHOICE:
+for TRAIN_OR_VAL in TRAIN_OR_VAL_CHOICE:
     for PREDESTRIAN_OR_VEHICLE in PREDESTRIAN_OR_VEHICLE_CHOICE:
         for video_subpath in glob.glob(f"{VIDEO_PATH}/{TRAIN_OR_VAL}/*"):
             for video in glob.glob(f"{video_subpath}/{PREDESTRIAN_OR_VEHICLE}/*.mp4"):
