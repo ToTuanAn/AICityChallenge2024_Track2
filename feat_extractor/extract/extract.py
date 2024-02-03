@@ -50,7 +50,7 @@ args = parser.parse_args()
 
 dataset = VideoLoader(
     args.csv,
-    framerate=10,  # one feature per second max
+    framerate=args.framerate,  # one feature per second max
     size=(336,336),
     centercrop=False,
 )
