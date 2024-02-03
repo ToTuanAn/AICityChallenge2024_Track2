@@ -360,18 +360,18 @@ def main(args):
                         val_stats.update(
                             {item.dataset_name + "_" + k: v for k, v in out.items()}
                         )
-                        cider = out["CIDEr"]
-                        bleu4 = out["Bleu_4"]
-                        meteor = out["METEOR"]
-                        rouge = out["ROUGE_L"]
-                        cur_acc = (cider + bleu4 + meteor + rouge) / 4
+                        val_cider = out["CIDEr"]
+                        val_bleu4 = out["Bleu_4"]
+                        val_meteor = out["METEOR"]
+                        val_rouge = out["ROUGE_L"]
+                        val_average_score = (val_cider + val_bleu4 + val_meteor + val_rouge) / 4
 
                         val_stats.update(
-                            {"wts_averaged_4score" : cur_acc}
+                            {"wts_averaged_4score" : val_average_score}
                         )
-                        if cur_acc > best_acc:
+                        if val_average_score > best_acc:
                             best_epoch = epoch
-                            best_acc = cur_acc
+                            best_acc = val_average_score
 
                             if dist.is_main_process() and args.save_dir:
                                 checkpoint_path = os.path.join(
