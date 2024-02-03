@@ -1,6 +1,6 @@
 import glob
 import numpy as np
-for folder in glob.glob("./data/features/val/*/overhead_view"):
+for folder in glob.glob("./data/features/*/*/*"):
     
     for npyfile in glob.glob(f"{folder}/*.npy"):
         data = np.load(npyfile)

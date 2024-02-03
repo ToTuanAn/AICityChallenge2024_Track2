@@ -5,6 +5,6 @@ data/
 TOFILL/
 datasets/
 analysis/output/
-
+new_annotations/
 *wandb*
 *.out

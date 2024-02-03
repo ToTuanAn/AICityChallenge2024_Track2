@@ -365,6 +365,10 @@ def main(args):
                         meteor = out["METEOR"]
                         rouge = out["ROUGE_L"]
                         cur_acc = (cider + bleu4 + meteor + rouge) / 4
+
+                        val_stats.update(
+                            {"wts_averaged_4score" : cur_acc}
+                        )
                         if cur_acc > best_acc:
                             best_epoch = epoch
                             best_acc = cur_acc

@@ -34,7 +34,11 @@ def convert_wts_to_youcook_format(video_filepath, caption_filepath):
     print(f"Loading video: {video_filepath}")
     cap = cv2.VideoCapture(video_filepath)
     video_fps = cap.get(cv2.CAP_PROP_FPS)
-    fps = 10
+    fps = 30
+    if video_filepath.split("/")[-3] == "20231006_21_CN5_T1":
+        print("Large videos: ", video_filepath)
+        fps = 10 
+
     frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     duration = frame_count / video_fps
     print(f" + Duration: {duration}s")
