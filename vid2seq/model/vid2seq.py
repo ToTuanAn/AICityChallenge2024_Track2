@@ -34,7 +34,8 @@ class Vid2Seq(torch.nn.Module):
                  num_bins=100,
                  label_smoothing=0.1):
         super().__init__()
-        self.t5_model = T5ForConditionalGeneration.from_pretrained(t5_path, encoder_dropout=enc_drop, decoder_dropout=dec_drop, label_smoothing=label_smoothing, is_gated_act="v1_1" in t5_path)
+        self.t5_model = T5ForConditionalGeneration.from_pretrained(encoder_dropout=enc_drop, decoder_dropout=dec_drop, label_smoothing=label_smoothing,
+                                                                   pretrained_model_name_or_path=t5_path, local_files_only=False, is_gated_act="v1_1" in t5_path)
         self.t5_model.resize_token_embeddings(len(tokenizer) - num_bins)  # remove the weights of the 28 tokens that are not used (32128 vs 32100 in the tokenizer)
         self.t5_model.resize_token_embeddings(len(tokenizer))  # add time tokens
         self.visual_encoder = VisionTransformer(num_features=num_features,
