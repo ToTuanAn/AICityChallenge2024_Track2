@@ -452,5 +452,5 @@ if __name__ == "__main__":
     if args.save_dir:
         args.save_dir = os.path.join(args.presave_dir, args.save_dir)
     if "7BHF" not in args.model_name and "Salesforce" not in args.model_name:
-        args.model_name = os.path.join(os.environ["TRANSFORMERS_CACHE"], args.model_name)
+        args.model_name = args.model_name
     main(args)
