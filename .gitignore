@@ -8,3 +8,6 @@ analysis/output/
 new_annotations/
 *wandb*
 *.out
+
+.DS_Store
+*/logs
