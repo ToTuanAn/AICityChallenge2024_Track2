@@ -777,6 +777,13 @@ def main():
     else:
         trainer.create_model_card(**kwargs)
 
+    inputs = tokenizer.encode(
+            "The pedestrian, a male in his 30s, stood diagonally to the left in front of the vehicle on a residential road. his body was perpendicular to the vehicle and positioned far away from it. his line of sight was focused on the road surface, and he appeared to be closely watching his surroundings. unaware of the vehicle, he was about to cross the road slowly. the pedestrian was dressed in a brown jacket, slacks, and a light blue hat. the weather was clear, and the brightness of the surroundings was bright. the road surface was dry and level, made of asphalt. the traffic volume was light, and there were two-way lanes on the road. there was an obstacle on the left side of the pedestrian, measuring 2 meters in height and 1 meter in width. both sides of the road had a sidewalk, roadside strip, and a roadside strip.",
+            return_tensors="pt"
+        )
+    outputs = model.generate(inputs)
+    logger.info(tokenizer.decode(outputs[0]))
+
     return results
 
 
