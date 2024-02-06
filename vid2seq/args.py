@@ -11,7 +11,7 @@ name2folder = {
     "htm": "howto100m",
     "chapters": "AllChapters",
     "vitt": "ViTT",
-    "wts" : "wts"
+    "wts": "wts",
 }
 
 
@@ -59,7 +59,9 @@ def get_args_parser():
     )
     parser.add_argument(
         "--youcook_subtitles_path",
-        default=os.path.join(DATA_DIR, name2folder["youcook"], "youcook2_asr_align_proc.pkl"),
+        default=os.path.join(
+            DATA_DIR, name2folder["youcook"], "youcook2_asr_align_proc.pkl"
+        ),
     )
 
     parser.add_argument(
@@ -89,15 +91,21 @@ def get_args_parser():
     )
     parser.add_argument(
         "--chapters_train_json_path",
-        default=os.path.join(DATA_DIR, name2folder["chapters"], "chapters_dvc_train.json"),
+        default=os.path.join(
+            DATA_DIR, name2folder["chapters"], "chapters_dvc_train.json"
+        ),
     )
     parser.add_argument(
         "--chapters_val_json_path",
-        default=os.path.join(DATA_DIR, name2folder["chapters"], "chapters_dvc_val.json"),
+        default=os.path.join(
+            DATA_DIR, name2folder["chapters"], "chapters_dvc_val.json"
+        ),
     )
     parser.add_argument(
         "--chapters_test_json_path",
-        default=os.path.join(DATA_DIR, name2folder["chapters"], "chapters_dvc_test.json"),
+        default=os.path.join(
+            DATA_DIR, name2folder["chapters"], "chapters_dvc_test.json"
+        ),
     )
     parser.add_argument(
         "--chapters_subtitles_path",
@@ -127,12 +135,16 @@ def get_args_parser():
 
     # Training hyper-parameters
     parser.add_argument(
-        "--denoising", default=1., type=float, help="denoising loss coef"
+        "--denoising", default=1.0, type=float, help="denoising loss coef"
     )
     parser.add_argument(
-        "--generative", default=1., type=float, help="generative loss coef"
+        "--generative", default=1.0, type=float, help="generative loss coef"
     )
-    parser.add_argument("--genasr", action="store_true", help="baseline that generates asr and not chapters")
+    parser.add_argument(
+        "--genasr",
+        action="store_true",
+        help="baseline that generates asr and not chapters",
+    )
     parser.add_argument("--random", action="store_true", help="random baseline")
     parser.add_argument(
         "--mask_prob",
@@ -171,7 +183,7 @@ def get_args_parser():
         "--label_smoothing", default=0.1, type=float, help="label smoothing"
     )
     parser.add_argument(
-        "--clip_max_norm", default=1., type=float, help="gradient clipping max norm"
+        "--clip_max_norm", default=1.0, type=float, help="gradient clipping max norm"
     )
     parser.add_argument(
         "--schedule",
@@ -246,18 +258,25 @@ def get_args_parser():
     parser.add_argument(
         "--bert_name",
         default="bert-base-uncased",
-        choices=(
-            "bert-base-uncased"
-        ),
+        choices=("bert-base-uncased"),
     )
     parser.add_argument(
-        "--text_encoder_dropout", default=0.1, type=float, help="dropout to use in the text encoder"
+        "--text_encoder_dropout",
+        default=0.1,
+        type=float,
+        help="dropout to use in the text encoder",
     )
     parser.add_argument(
-        "--text_decoder_dropout", default=0.1, type=float, help="dropout to use in the text decoder"
+        "--text_decoder_dropout",
+        default=0.1,
+        type=float,
+        help="dropout to use in the text decoder",
     )
     parser.add_argument(
-        "--visual_encoder_dropout", default=0.1, type=float, help="dropout to use in the visual encoder"
+        "--visual_encoder_dropout",
+        default=0.1,
+        type=float,
+        help="dropout to use in the visual encoder",
     )
     parser.add_argument(
         "--max_feats",
@@ -334,13 +353,13 @@ def get_args_parser():
     parser.add_argument(
         "--length_penalty",
         type=float,
-        default=1.,
+        default=1.0,
         help="length penalty for beam search",
     )
     parser.add_argument(
         "--repetition_penalty",
         type=float,
-        default=1.,
+        default=1.0,
         help="repetition penalty for beam search",
     )
     parser.add_argument(
@@ -353,9 +372,7 @@ def get_args_parser():
     parser.add_argument(
         "--blip2_model_name",
         default="pretrain_flant5xl_vitL",
-        choices=(
-            "pretrain_flant5xl_vitL"
-        ),
+        choices=("pretrain_flant5xl_vitL"),
     )
     parser.add_argument(
         "--resolution",
@@ -375,19 +392,37 @@ def get_args_parser():
         type=str,
         help="path to a ASR example for demo",
     )
-    
+
+    # Llama-video parameters
+    parser.add_argument(
+        "--llama_video",
+        action="store_true",
+        help="path to llama model, provide if use LlamaVideo model",
+    )
+    parser.add_argument(
+        "--llama_vision_encoder",
+        default=None,
+        type=str,
+        help="path to llama vision encoder, provide if use LlamaVideo model",
+    )
+    parser.add_argument(
+        "--llama_language_model",
+        default=None,
+        type=str,
+        help="path to llama language model, provide if use LlamaVideo model",
+    )
+
+    parser.add_argument(
+        "--cache_dir", default="./cache", type=str, help="cache directory"
+    )
+
     # wandb parameters
     parser.add_argument(
-        "--wandb_project",
-        default=None, type=str, help="wandb project name"
+        "--wandb_project", default=None, type=str, help="wandb project name"
     )
     parser.add_argument(
-        "--wandb_entity",
-        default=None, type=str, help="wandb entity name"
+        "--wandb_entity", default=None, type=str, help="wandb entity name"
     )
-    parser.add_argument(
-        "--wandb_name",
-        default=None, type=str, help="wandb run name"
-    )
+    parser.add_argument("--wandb_name", default=None, type=str, help="wandb run name")
 
     return parser

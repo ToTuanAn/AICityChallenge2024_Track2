@@ -7,4 +7,5 @@ datasets/
 analysis/output/
 new_annotations/
 *wandb*
-*.out
+*.
+cache*
