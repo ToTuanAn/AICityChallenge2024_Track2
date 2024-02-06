@@ -52,6 +52,7 @@ def build_llama_video_model(args, tokenizer):
         cache_dir=args.cache_dir,
         device_map="auto",
         quantization_config=nf4_config,
+        token="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",
     )
 
     return LlamaVideo(
