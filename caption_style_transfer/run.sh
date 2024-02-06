@@ -17,7 +17,7 @@ python run.py \
     --do_eval \
     --train_file $DATA_DIR/BART_denoising_data/train.csv \
     --validation_file $DATA_DIR/BART_denoising_data/val.csv \
-    --source_prefix "paraphase: " \
+    --source_prefix "rephrase: " \
     --output_dir $DATA_DIR/$TASK_NAME/$DATA_RATIO/$MODEL \
     --overwrite_output_dir \
     --per_device_train_batch_size=2 \
