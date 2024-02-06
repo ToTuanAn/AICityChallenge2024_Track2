@@ -782,7 +782,7 @@ def main():
             return_tensors="pt"
         ).to("cuda")
     outputs = model.generate(inputs)
-    logger.info(tokenizer.decode(outputs[0]))
+    print(tokenizer.decode(outputs[0]))
 
     return results
 
