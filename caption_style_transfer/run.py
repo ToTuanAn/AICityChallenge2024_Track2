@@ -780,18 +780,14 @@ def main():
     import pandas as pd
     df = pd.read_csv(data_args.validation_file)
 
-    rephrase_lst = []
-
     for x in df['sentence']:
+        print('\n\n')
         inputs = tokenizer.encode(
                 "rephrase: " + x,
                 return_tensors="pt"
             ).to("cuda")
         outputs = model.generate(inputs, max_new_tokens=320)
-        rephrase_lst.append(tokenizer.decode(outputs[0]))
-    
-    df["rephrase_sentence"] = rephrase_lst
-    df.to_csv('out.csv', index=False)
+        print(tokenizer.decode(outputs[0]))
 
     return results
 
