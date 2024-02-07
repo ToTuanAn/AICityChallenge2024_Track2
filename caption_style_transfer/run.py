@@ -778,7 +778,7 @@ def main():
         trainer.create_model_card(**kwargs)
 
     import pandas as pd
-    df = pd.read_csv(model_args.validation_file)
+    df = pd.read_csv(data_args.validation_file)
 
     rephrase_lst = []
 
