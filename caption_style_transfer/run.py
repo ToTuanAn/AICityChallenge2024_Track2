@@ -777,12 +777,21 @@ def main():
     else:
         trainer.create_model_card(**kwargs)
 
-    inputs = tokenizer.encode(
-            "rephrase: The pedestrian, a male in his 20s, stood diagonally to the left in front of the vehicle on a clear and bright weekday morning. he was wearing a white hat, a black t-shirt, and black slacks. the pedestrian's body was oriented diagonally to the left, opposite to the direction of the vehicle. despite being far from the vehicle, he closely watched it, his line of sight focused on it. the pedestrian's direction of travel was in front, aligned with the direction of travel. he was traveling in a car lane at a slow speed. the road surface was dry and level, made of asphalt. the traffic volume was usual, and it was a main road with one-way traffic and two lanes. both sides of the road had sidewalks. overall, the pedestrian's actions and the environment conditions suggested a typical scenario for the pedestrian.",
-            return_tensors="pt"
-        ).to("cuda")
-    outputs = model.generate(inputs, max_new_tokens=320)
-    print(tokenizer.decode(outputs[0]))
+    import pandas as pd
+    df = pd.read_csv(model_args.validation_file)
+
+    rephrase_lst = []
+
+    for x in df['sentence']:
+        inputs = tokenizer.encode(
+                "rephrase: " + x,
+                return_tensors="pt"
+            ).to("cuda")
+        outputs = model.generate(inputs, max_new_tokens=320)
+        rephrase_lst.append(tokenizer.decode(outputs[0]))
+    
+    df["rephrase_sentence"] = rephrase_lst
+    df.to_csv('out.csv', index=False)
 
     return results
 
