@@ -62,10 +62,16 @@ def parse_args():
         help="Path to the directory containing position analysis",
     )
 
-    parser.add_argument("--stopword",
-                        action="store_true")
-
     return parser.parse_args()
+
+
+def check_have_location(caption_lst: list, keywords: list[str] = ["positioned", "located"]):
+    for keyword in keywords:
+        for index, cap in enumerate(caption_lst):
+            if keyword in cap:
+                return True, index
+            
+    return False, None
 
 
 def run_analysis(analysis_dir, output_dir, caption_dir, bbox_dir, view, ngram):
@@ -112,8 +118,10 @@ def run_analysis(analysis_dir, output_dir, caption_dir, bbox_dir, view, ngram):
                             label = event["labels"][0]
                             tmp_phase = {}
                             tmp_phase["phase_number"] = label
-                            if "positioned" in caption_vehicle_list[0]:
-                                tmp_phase["caption"] = caption_vehicle_list[0]
+
+                            _have, _idx = check_have_location(caption_vehicle_list)
+                            if _have:
+                                tmp_phase["caption"] = caption_vehicle_list[_idx]
                                 tmp_phase["positions"] = []
 
                                 for bb in bbox_p_v:
