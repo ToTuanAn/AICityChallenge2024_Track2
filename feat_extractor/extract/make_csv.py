@@ -4,7 +4,7 @@ import os
 
 VIDEO_PATH = "./data/videos"
 FEATURE_PATH = "./data/features"
-TRAIN_OR_VAL_CHOICE = ["test"]
+TRAIN_OR_VAL_CHOICE = ["train"]
 PREDESTRIAN_OR_VEHICLE_CHOICE = ["overhead_view", "vehicle_view"]
 AUGMENT_TYPE = "BLUR"
 
