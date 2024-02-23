@@ -53,6 +53,7 @@ dataset = VideoLoader(
     framerate=args.framerate,  # one feature per second max
     size=(336,336),
     centercrop=False,
+    augment=False
 )
 n_dataset = len(dataset)
 sampler = RandomSequenceSampler(n_dataset, 10)

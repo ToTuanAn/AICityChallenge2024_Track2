@@ -4,7 +4,11 @@ import pandas as pd
 import os
 import numpy as np
 import ffmpeg
+from vidaug import augmentors as va
 
+seq = va.Sequential([
+    va.GaussianBlur(sigma=1), # randomly rotates the video with a degree randomly choosen from [-10, 10]  
+])
 
 class VideoLoader(Dataset):
     """Pytorch video loader."""
@@ -15,11 +19,13 @@ class VideoLoader(Dataset):
         framerate=1,
         size=112,
         centercrop=False,
+        augment=False
     ):
         self.csv = pd.read_csv(csv)
         self.centercrop = centercrop
         self.size = size
         self.framerate = framerate
+        self.augment = augment
 
     def __len__(self):
         return len(self.csv)
@@ -93,7 +99,10 @@ class VideoLoader(Dataset):
             if self.centercrop and isinstance(self.size, int):
                 height, width = self.size, self.size
             video = np.frombuffer(out, np.uint8).reshape([-1, height, width, 3])
+            if self.augment:
+                video = np.array(seq(video))
             video = th.from_numpy(video.astype("float32"))
+            print(video.shape)
             video = video.permute(0, 3, 1, 2)
             #print("Video shape: ", video.shape)
         else:
