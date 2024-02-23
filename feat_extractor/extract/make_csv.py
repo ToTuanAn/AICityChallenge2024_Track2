@@ -4,8 +4,9 @@ import os
 
 VIDEO_PATH = "./data/videos"
 FEATURE_PATH = "./data/features"
-TRAIN_OR_VAL_CHOICE = ["train", "val"]
+TRAIN_OR_VAL_CHOICE = ["test"]
 PREDESTRIAN_OR_VEHICLE_CHOICE = ["overhead_view", "vehicle_view"]
+AUGMENT_TYPE = "BLUR"
 
 arr_jsonl = []
 
@@ -16,6 +17,7 @@ for TRAIN_OR_VAL in TRAIN_OR_VAL_CHOICE:
                 output_path = f"{FEATURE_PATH}/{TRAIN_OR_VAL}/{video_subpath.split('/')[-1]}/{PREDESTRIAN_OR_VEHICLE}"
                 os.makedirs(output_path, exist_ok=True)
 
+                # feature_path = f"{output_path}/{video.split('/')[-1][:-4]}_{AUGMENT_TYPE}.npy"
                 feature_path = f"{output_path}/{video.split('/')[-1][:-4]}.npy"
                 arr_jsonl.append({"video_path" : video, "feature_path" : feature_path})
 
