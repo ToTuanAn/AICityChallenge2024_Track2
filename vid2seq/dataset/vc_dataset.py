@@ -92,8 +92,9 @@ class VideoCaptioning_Dataset(Dataset):
     def _get_text(self, text):
         text = text.strip()
         text = text.capitalize()
-        if text[-1] != '.':
-            text = text + '.'
+        if len(text) != 0:
+            if text[-1] != '.':
+                text = text + '.'
         return text
 
     def _get_raw(self, path):
