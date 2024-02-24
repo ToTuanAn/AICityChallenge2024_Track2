@@ -160,7 +160,10 @@ def evaluate(
 
         gts = batch_dict["output_text"][0]
         video_id = batch_dict["video_id"][0]
-        clip_ids = [video_id + "#" + str(i) for i in range(len(gts))]
+        if len(gts) < 5:
+            clip_ids = [video_id + "#" + str(5-len(gts)+i) for i in range(len(gts))]
+        else:
+            clip_ids = [video_id + "#" + str(i) for i in range(len(gts))]
         for clip_id, pred, gt in zip(clip_ids, output, gts):
             res[clip_id] = {'sentence': pred, 'gt': gt}
 
