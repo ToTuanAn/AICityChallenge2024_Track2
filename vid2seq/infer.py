@@ -141,7 +141,6 @@ def main(args):
     # Build dataloader
     dataset_test = TestDataset(json_path = args.wts_test_json_path,
                                features_path = args.wts_features_path,
-                               videos_path = None,
                                max_feats = args.max_feats,
                                features_dim = args.features_dim
                                )
