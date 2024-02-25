@@ -4,15 +4,10 @@ import torch
 import random
 import argparse
 import numpy as np
-
 from torch.utils.data import Dataset, DataLoader
 
+from args import get_args_parser
 from model import build_vid2seq_model, _get_tokenizer
-
-
-args = {
-
-}
 
 
 class TestDataset(Dataset):
@@ -110,41 +105,29 @@ def infer(model,
     model.eval()
 
     for i, batch_dict in enumerate(dataloader):
+        print(batch_dict)
         # why [0]?
-        input_text = batch_dict['input_text'][0]
-        video = batch_dict['video'][0]
-        input_tokenized = tokenizer(
-            input_text,
-            padding = 'longest',
-            truncation = True,
-            max_lengths = args.max_input_token,
-            return_tensors = 'pt'
-        ).to(device)
-        output = model.generate(video = video,
-                                input_tokenized = input_tokenized,
-                                use_nucleus_sampling = args.num_beams == 0,
-                                num_beams = args.num_beams,
-                                max_length = args.max_output_tokens,
-                                min_length = 1,
-                                top_p = args.top_p,
-                                repetition_penalty = args.repetition_penalty,
-                                length_penalty = args.length_penalty,
-                                num_captions = 1,
-                                temperature = 1)
-        
+        # input_text = batch_dict['input_text'][0]
+        # video = batch_dict['video'][0]
+        # input_tokenized = tokenizer(
+        #     input_text,
+        #     padding = 'longest',
+        #     truncation = True,
+        #     max_lengths = args.max_input_token,
+        #     return_tensors = 'pt'
+        # ).to(device)
+        # output = model.generate(video = video,
+        #                         input_tokenized = input_tokenized,
+        #                         use_nucleus_sampling = args.num_beams == 0,
+        #                         num_beams = args.num_beams,
+        #                         max_length = args.max_output_tokens,
+        #                         min_length = 1,
+        #                         top_p = args.top_p,
+        #                         repetition_penalty = args.repetition_penalty,
+        #                         length_penalty = args.length_penalty,
+        #                         num_captions = 1,
+        #                         temperature = 1)
 
-
-
-
-
-
-
-# args.device
-# args.load: checkpoint file path
-# args.batch_size_val
-# args.num_workers
-# args.model_name
-# args.num_bins
 
 def main(args):
     device = torch.device(args.device)
@@ -156,9 +139,12 @@ def main(args):
     random.seed(seed)
 
     # Build dataloader
-    dataset_test = TestDataset(
-
-    )
+    dataset_test = TestDataset(json_path = args.wts_test_json_path,
+                               features_path = args.wts_features_path,
+                               videos_path = None,
+                               max_feats = args.max_feats,
+                               features_dim = args.features_dim
+                               )
     sampler_test = torch.utils.data.SequentialSampler(dataset_test)
     dataloader_test = DataLoader(dataset_test,
                                  batch_size = args.batch_size_val,
@@ -168,6 +154,7 @@ def main(args):
                                 )
 
     # Load pretrained tokenizer
+    args.num_bins = 0
     tokenizer = _get_tokenizer(args.model_name, args.num_bins)
     
     # Load pretrained model
@@ -187,10 +174,8 @@ def main(args):
           device
     )
 
-    return
-
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-
+    parser = argparse.ArgumentParser(parents=[get_args_parser()])
+    args = parser.parse_args()
     main(args)
