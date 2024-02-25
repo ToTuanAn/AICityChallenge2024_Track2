@@ -112,7 +112,6 @@ def infer(model,
     res = {}
 
     for i, batch_dict in enumerate(dataloader):
-        print(batch_dict)
         # batch_size_val must be 1
         input_text = batch_dict['input_text'][0]
         input_tokenized = tokenizer(input_text,
