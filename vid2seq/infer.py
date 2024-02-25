@@ -11,20 +11,19 @@ from model import build_vid2seq_model, _get_tokenizer
 
 
 class TestDataset(Dataset):
-    def __init__(self, 
+    def __init__(self,
                  json_path,
                  features_path,
-                 max_feats = 100,
-                 features_dim = 768):
+                 max_feats=100,
+                 features_dim=768):
         self.data = json.load(open(json_path, 'r'))
         self.vids = list(self.data.keys())
-        
+
         self.features = None
         self.features_path = None
         if os.path.isdir(features_path):
             self.features_path = features_path
         else:
-            # file .npy but using torch.load?
             self.features = torch.load(features_path)
 
         self.max_feats = max_feats
@@ -32,25 +31,28 @@ class TestDataset(Dataset):
 
     def __len__(self):
         return len(self.data)
-    
+
     def _get_video(self, video_id):
         if self.features is not None:
             assert video_id in self.features, video_id
             video = self.features[video_id].float()
         else:
-            features_path = os.path.join(self.features_path, video_id + '.mp4.npy')
+            features_path = os.path.join(
+                self.features_path, video_id + '.mp4.npy')
             if not os.path.exists(features_path):
-                features_path = os.path.join(self.features_path, video_id + '.npy')
+                features_path = os.path.join(
+                    self.features_path, video_id + '.npy')
             assert os.path.exists(features_path), features_path
             video = torch.from_numpy(np.load(features_path)).float()
 
         return video
-    
+
     def pad_video(self, video):
         if self.max_feats == 1:
             tmp = video[len(video) // 2: len(video) // 2 + 1]
             if len(tmp):
-                return video[len(video) // 2: len(video) // 2 + 1]  # middle frame
+                # middle frame
+                return video[len(video) // 2: len(video) // 2 + 1]
             else:
                 return torch.zeros(self.max_feats, self.features_dim)
         if len(video) >= self.max_feats:
@@ -61,17 +63,19 @@ class TestDataset(Dataset):
         elif len(video) < self.max_feats:
             video_len = len(video)
             video = torch.cat(
-                [video, torch.zeros(self.max_feats - video_len, self.features_dim)], 0
+                [video, torch.zeros(
+                    self.max_feats - video_len, self.features_dim)], 0
             )
         return video
-    
+
     def __getitem__(self, idx):
         video_id = self.vids[idx]
         annotations = self.data[video_id]
 
         video = self._get_video(video_id)
-        video = torch.stack([self.pad_video(video[int(x[0]): int(x[1]) + 1]) for x in annotations['timestamps']])
-        
+        video = torch.stack([self.pad_video(video[int(x[0]): int(x[1]) + 1])
+                            for x in annotations['timestamps']])
+
         text = ['' for _ in annotations['sentences']]
 
         out = {
@@ -81,7 +85,7 @@ class TestDataset(Dataset):
         }
 
         return out
-    
+
 
 def test_collate_fn(batch):
     bs = len(batch)
@@ -101,32 +105,42 @@ def infer(model,
           tokenizer,
           dataloader,
           device):
-    
+
+    model.to(device)
     model.eval()
+
+    res = {}
 
     for i, batch_dict in enumerate(dataloader):
         print(batch_dict)
-        # why [0]?
-        # input_text = batch_dict['input_text'][0]
-        # video = batch_dict['video'][0]
-        # input_tokenized = tokenizer(
-        #     input_text,
-        #     padding = 'longest',
-        #     truncation = True,
-        #     max_lengths = args.max_input_token,
-        #     return_tensors = 'pt'
-        # ).to(device)
-        # output = model.generate(video = video,
-        #                         input_tokenized = input_tokenized,
-        #                         use_nucleus_sampling = args.num_beams == 0,
-        #                         num_beams = args.num_beams,
-        #                         max_length = args.max_output_tokens,
-        #                         min_length = 1,
-        #                         top_p = args.top_p,
-        #                         repetition_penalty = args.repetition_penalty,
-        #                         length_penalty = args.length_penalty,
-        #                         num_captions = 1,
-        #                         temperature = 1)
+        # batch_size_val must be 1
+        input_text = batch_dict['input_text'][0]
+        input_tokenized = tokenizer(input_text,
+                                    padding='longest',
+                                    truncation=True,
+                                    max_length=args.max_input_tokens,
+                                    return_tensors='pt').to(device)
+
+        video = batch_dict['video'][0].to(device)
+
+        output = model.generate(video=video,
+                                input_tokenized=input_tokenized,
+                                use_nucleus_sampling=args.num_beams == 0,
+                                num_beams=args.num_beams,
+                                max_length=args.max_output_tokens,
+                                min_length=1,
+                                top_p=args.top_p,
+                                repetition_penalty=args.repetition_penalty,
+                                length_penalty=args.length_penalty,
+                                num_captions=1,
+                                temperature=1)
+
+        video_id = batch_dict['video_id'][0]
+        clip_ids = [video_id + "#" + str(i) for i in range(5)]
+        for clip_id, pred in zip(clip_ids, output):
+            res[clip_id] = pred
+
+    return res
 
 
 def main(args):
@@ -139,25 +153,23 @@ def main(args):
     random.seed(seed)
 
     # Build dataloader
-    dataset_test = TestDataset(json_path = args.wts_test_json_path,
-                               features_path = args.wts_features_path,
-                               max_feats = args.max_feats,
-                               features_dim = args.features_dim
-                               )
+    dataset_test = TestDataset(json_path=args.wts_test_json_path,
+                               features_path=args.wts_features_path,
+                               max_feats=args.max_feats,
+                               features_dim=args.features_dim)
     sampler_test = torch.utils.data.SequentialSampler(dataset_test)
     dataloader_test = DataLoader(dataset_test,
-                                 batch_size = args.batch_size_val,
-                                 sampler = sampler_test,
-                                 collate_fn= test_collate_fn,
-                                 num_workers= args.num_workers,
-                                )
+                                 batch_size=args.batch_size_val,
+                                 sampler=sampler_test,
+                                 collate_fn=test_collate_fn,
+                                 num_workers=args.num_workers)
 
     # Load pretrained tokenizer
     args.num_bins = 0
     tokenizer = _get_tokenizer(args.model_name, args.num_bins)
-    
+
     # Load pretrained model
-    model = build_vid2seq_model(args, tokenizer).to(device)
+    model = build_vid2seq_model(args, tokenizer)
     checkpoint = torch.load(args.load, map_location='cpu')
     # Remove time tokens
     if 't5_model.shared.weight' in checkpoint['model']:
@@ -167,11 +179,13 @@ def main(args):
         checkpoint['model']['t5_model.lm_head.weight'] = checkpoint['model']['t5_model.lm_head.weight'][:32100]
     model.load_state_dict(checkpoint['model'], strict=False)
 
-    infer(model,
-          tokenizer,
-          dataloader_test,
-          device
-    )
+    preds = infer(model,
+                  tokenizer,
+                  dataloader_test,
+                  device)
+
+    with open(args.save, 'w') as f:
+        json.dump(preds, f, indent=4)
 
 
 if __name__ == '__main__':
