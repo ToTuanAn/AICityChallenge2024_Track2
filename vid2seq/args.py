@@ -235,7 +235,14 @@ def get_args_parser():
     parser.add_argument(
         "--save",
         default="",
-        help="path to save prediction",
+    )
+    parser.add_argument(
+        "--pedestrian",
+        default="",
+    )
+    parser.add_argument(
+        "--vehicle",
+        default="",
     )
     parser.add_argument(
         "--resume",
