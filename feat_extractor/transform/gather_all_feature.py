@@ -1,8 +1,17 @@
 import glob
 import numpy as np
 
+
 hit = 0 
-for folder in glob.glob("./data/features/test/*/*"):
+# for folder in glob.glob("./data/features/train/*/*"):
+
+VIDEO_PATH = "./data/videos"
+FEATURE_PATH = "./data/features"
+TRAIN_OR_VAL = "val"
+PREDESTRIAN_OR_VEHICLE = "*"
+
+for folder in glob.glob(f"{FEATURE_PATH}/{TRAIN_OR_VAL}/*/{PREDESTRIAN_OR_VEHICLE}"):
+
     
     for npyfile in glob.glob(f"{folder}/*.npy"):
         data = np.load(npyfile)

@@ -77,8 +77,8 @@ def run_analysis(output_dir, caption_dir, view):
         output_path = os.path.join(output_dir, f"frames_analysis_label_{key}.png")
         fig, ax = plt.subplots()
         counts, bins = np.histogram(value)
-        ax.hist(bins[:-1], bins, weights=counts, density=True)
-        ax.set_ylabel('Probability Density')
+        ax.hist(bins[:-1], bins, weights=counts)
+        ax.set_ylabel('Frequency')
         ax.set_xlabel('# Frames')
 
         plt.savefig(output_path)

@@ -47,7 +47,8 @@ def get_args_parser():
 
     parser.add_argument(
         "--youcook_features_path",
-        default=os.path.join(DATA_DIR, name2folder["youcook"], "clipvitl14.pth"),
+        default=os.path.join(
+            DATA_DIR, name2folder["youcook"], "clipvitl14.pth"),
     )
     parser.add_argument(
         "--youcook_train_json_path",
@@ -82,7 +83,8 @@ def get_args_parser():
     )
     parser.add_argument(
         "--vitt_subtitles_path",
-        default=os.path.join(DATA_DIR, name2folder["vitt"], "subtitles_align_proc.pkl"),
+        default=os.path.join(
+            DATA_DIR, name2folder["vitt"], "subtitles_align_proc.pkl"),
     )
 
     parser.add_argument(
@@ -118,15 +120,18 @@ def get_args_parser():
     )
     parser.add_argument(
         "--wts_train_json_path",
-        default=os.path.join(DATA_DIR, name2folder["wts"], "pedestrian_train.json"),
+        default=os.path.join(
+            DATA_DIR, name2folder["wts"], "pedestrian_train.json"),
     )
     parser.add_argument(
         "--wts_val_json_path",
-        default=os.path.join(DATA_DIR, name2folder["wts"], "pedestrian_val.json"),
+        default=os.path.join(
+            DATA_DIR, name2folder["wts"], "pedestrian_val.json"),
     )
     parser.add_argument(
         "--wts_test_json_path",
-        default=os.path.join(DATA_DIR, name2folder["wts"], "pedestrian_val.json"),
+        default=os.path.join(
+            DATA_DIR, name2folder["wts"], "pedestrian_val.json"),
     )
     parser.add_argument(
         "--wts_subtitles_path",
@@ -145,7 +150,8 @@ def get_args_parser():
         action="store_true",
         help="baseline that generates asr and not chapters",
     )
-    parser.add_argument("--random", action="store_true", help="random baseline")
+    parser.add_argument("--random", action="store_true",
+                        help="random baseline")
     parser.add_argument(
         "--mask_prob",
         type=float,
@@ -227,6 +233,18 @@ def get_args_parser():
         help="path to load checkpoint",
     )
     parser.add_argument(
+        "--save",
+        default="",
+    )
+    parser.add_argument(
+        "--pedestrian",
+        default="",
+    )
+    parser.add_argument(
+        "--vehicle",
+        default="",
+    )
+    parser.add_argument(
         "--resume",
         action="store_true",
         help="continue training if loading checkpoint",
@@ -234,7 +252,8 @@ def get_args_parser():
     parser.add_argument(
         "--start-epoch", default=0, type=int, metavar="N", help="start epoch"
     )
-    parser.add_argument("--eval", action="store_true", help="only run evaluation")
+    parser.add_argument("--eval", action="store_true",
+                        help="only run evaluation")
     parser.add_argument(
         "--num_workers", default=3, type=int, help="number of workers for dataloader"
     )
@@ -423,6 +442,7 @@ def get_args_parser():
     parser.add_argument(
         "--wandb_entity", default=None, type=str, help="wandb entity name"
     )
-    parser.add_argument("--wandb_name", default=None, type=str, help="wandb run name")
+    parser.add_argument("--wandb_name", default=None,
+                        type=str, help="wandb run name")
 
     return parser
