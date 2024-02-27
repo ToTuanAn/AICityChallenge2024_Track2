@@ -9,6 +9,7 @@ from torch.utils.data import Dataset, DataLoader
 from args import get_args_parser
 from model import build_vid2seq_model, _get_tokenizer
 
+from rules_engine.rules_executor import RulesExecutor
 
 class TestDataset(Dataset):
     def __init__(self,
@@ -182,6 +183,10 @@ def main(args):
                   tokenizer,
                   dataloader_test,
                   device)
+    
+
+    # rule_executor = RulesExecutor(config_path="../rules_engine/configs/rule_config.yaml")
+    # preds = rule_executor.run(preds)
 
     with open(args.save, 'w') as f:
         json.dump(preds, f, indent=4)
