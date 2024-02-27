@@ -1,9 +1,3 @@
-pedestrian_ckpt_path=/kaggle/input/best-vehicle-model-ckpt/vehicle_39.93.pth
-vehicle_ckpt_path=/kaggle/input/best-vehicle-model-ckpt/vehicle_39.93.pth
-
-pedestrian_data_path=/kaggle/input/dummy-pedestrian/wts
-vehicle_data_path=/kaggle/input/dummy-vehicle/wts
-
 mkdir output
 pedestrian_pred_path=output/pedestrian.json
 vehicle_pred_path=output/vehicle.json
@@ -43,4 +37,5 @@ python -m torch.distributed.launch --nproc_per_node 1 \
 
 python postprocessing.py --pedestrian $pedestrian_pred_path \
                          --vehicle $vehicle_pred_path \
-                         --save $submission_path
+                         --save $submission_path \
+                         --combine_datasets wts \
