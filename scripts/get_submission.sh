@@ -41,6 +41,6 @@ python -m torch.distributed.launch --nproc_per_node 1 \
                                     --load $vehicle_ckpt_path \
                                     --save $vehicle_pred_path
 
-python -m ../postprocessing/postprocessing.py --pedestrian $pedestrian_pred_path \
-                                              --vehicle $vehicle_pred_path \
-                                              --save $submission_path
+python postprocessing.py --pedestrian $pedestrian_pred_path \
+                         --vehicle $vehicle_pred_path \
+                         --save $submission_path

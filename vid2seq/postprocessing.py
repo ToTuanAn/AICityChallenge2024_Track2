@@ -1,6 +1,6 @@
 import json
 import argparse
-from ..vid2seq.args import get_args_parser
+from args import get_args_parser
 
 
 def main(args):
@@ -26,7 +26,7 @@ def main(args):
 
     for video_id in submission:
         submission[video_id] = sorted(
-            submission[video_id], key=lambda x: x['labels'][0])
+            submission[video_id], key=lambda x: int(x['labels'][0]) * -1)
 
     with open(args.save, 'w') as f:
         json.dump(submission, f, indent=4)
