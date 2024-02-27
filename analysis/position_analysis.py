@@ -7,6 +7,31 @@ import numpy as np
 from tqdm import tqdm
 from nltk.corpus import stopwords
 from transformers import AutoTokenizer
+from operator import sub
+
+# CCW : Counter-Clock-Wise
+# vector subtraction : tuple(map(sub, p1, p2)) 
+def ccw(a, b, c):
+    # a = [a[0] + a[2] / 2, a[1] + a[3] / 2]
+    # b = [b[0] + b[2] / 2, b[1] + b[3] / 2]
+    # c = [c[0] + c[2] / 2, c[1] + c[3] / 2]
+    a, c = tuple(map(sub, b, a)), tuple(map(sub, c, a))
+    return a[0]*c[1]-a[1]*c[0]
+
+def angle(a, b, c):
+    """
+        a is corner
+    """
+
+    a = [a[0] + a[2] / 2, a[1] + a[3] / 2]
+    b = [b[0] + b[2] / 2, b[1] + b[3] / 2]
+    c = [c[0] + c[2] / 2, c[1] + c[3] / 2]
+    def dist(a):
+        return np.sqrt([(a[0])**2 + (a[1])**2])[0]
+    a = (a[0] - b[0], a[1] - b[1])
+    b = (a[0] - c[0], a[1] - c[1])
+
+    return np.arccos((a[0]*b[0] + a[1]*b[1])/(dist(a) * dist(b)))
 
 
 class View(enum.Enum):
@@ -65,13 +90,21 @@ def parse_args():
     return parser.parse_args()
 
 
-def check_have_location(caption_lst: list, keywords: list[str] = ["positioned", "located"]):
+def check_have_location(caption_lst: list, keywords: list[str] = ["positioned", "located", "situated"]):
     for keyword in keywords:
         for index, cap in enumerate(caption_lst):
-            if keyword in cap:
+            if keyword in cap and "vehicle" in cap:
                 return True, index
             
     return False, None
+
+def check_true(ccw_value, category):
+    if category == "left":
+        return ccw_value < 0
+    elif category == "right":
+        return ccw_value > 0
+
+    return category
 
 
 def run_analysis(analysis_dir, output_dir, caption_dir, bbox_dir, view, ngram):
@@ -122,21 +155,53 @@ def run_analysis(analysis_dir, output_dir, caption_dir, bbox_dir, view, ngram):
                             _have, _idx = check_have_location(caption_vehicle_list)
                             if _have:
                                 tmp_phase["caption"] = caption_vehicle_list[_idx]
+                                if "right" in tmp_phase["caption"]:
+                                    tmp_phase["category"] = "right"
+                                elif "left" in tmp_phase["caption"]:
+                                    tmp_phase["category"] = "left"
+                                elif "in front of" in tmp_phase["caption"]:
+                                    tmp_phase["category"] = "in front of"
+                                elif "behind" in tmp_phase["caption"]:
+                                    tmp_phase["category"] = "behind"
+
                                 tmp_phase["positions"] = []
 
                                 for bb in bbox_p_v:
                                     f_bbox_ped = json.load(open(os.path.join(bbox_pedestrian_path, bb)))["annotations"]
                                     f_bbox_veh = json.load(open(os.path.join(bbox_vehical_path, bb)))["annotations"]
 
-                                    tmp = {}
+                                    tmp = {
+                                        "camera": bb
+                                    }
 
                                     for img in f_bbox_ped:
                                         if label[0] == img["phase_number"]:
                                             tmp["pedestrian"] = img["bbox"]
+                                        
+                                        if str(int(label[0]) + 1) == img["phase_number"]:
+                                            tmp["pedestrian_next"] = img["bbox"]
+
+                                        if str(int(label[0]) - 1) == img["phase_number"]:
+                                            tmp["pedestrian_prev"] = img["bbox"]
 
                                     for img in f_bbox_veh:
                                         if label[0] == img["phase_number"]:
                                             tmp["vehicle"] = img["bbox"]
+
+                                    if "pedestrian" in tmp.keys() and "pedestrian_prev" in tmp.keys() and "vehicle" in tmp.keys():
+                                        ccw_value = ccw(tmp["pedestrian_prev"], tmp["pedestrian"], tmp["vehicle"])
+                                        tmp["prev_ccw"] = [
+                                            ccw_value,
+                                            check_true(ccw_value, tmp_phase["category"]) if "category" in tmp_phase.keys() else None,
+                                            # angle(tmp["pedestrian"], tmp["pedestrian_prev"], tmp["vehicle"])
+                                        ]
+                                    if "pedestrian" in tmp.keys() and "pedestrian_next" in tmp.keys() and "vehicle" in tmp.keys():
+                                        ccw_value = ccw(tmp["pedestrian"], tmp["pedestrian_next"], tmp["vehicle"])
+                                        tmp["next_ccw"] = [
+                                            ccw_value,
+                                            check_true(ccw_value, tmp_phase["category"]) if "category" in tmp_phase.keys() else None,
+                                            # angle(tmp["pedestrian_next"], tmp["pedestrian"], tmp["vehicle"])
+                                        ]
 
                                     tmp_phase["positions"].append(tmp)
 
@@ -149,10 +214,91 @@ def run_analysis(analysis_dir, output_dir, caption_dir, bbox_dir, view, ngram):
                 print(e)
                 continue
 
-
-
     with open(output_dir + '/position_analysis.json', 'w') as f:
         json.dump(position_analysis, f)
+    
+
+def run_eda(output_dir):
+    f = open(output_dir + '/position_analysis.json', 'r')
+    position_analysis = json.load(f)
+
+    cnt = {
+        "0": {
+            "prev": 0,
+            "next": 0
+        },
+        "1": {
+            "prev": 0,
+            "next": 0
+        },
+        "2": {
+            "prev": 0,
+            "next": 0
+        },
+        "3": {
+            "prev": 0,
+            "next": 0
+        },
+        "4": {
+            "prev": 0,
+            "next": 0
+        }
+    }
+    _cnt = {
+        "0": {
+            "true_prev": 0,
+            "true_next": 0,
+            "true_p_wo_n": 0,
+            "true_n_wo_q": 0,
+        },
+        "1": {
+            "true_prev": 0,
+            "true_next": 0,
+            "true_p_wo_n": 0,
+            "true_n_wo_q": 0,
+        },
+        "2": {
+            "true_prev": 0,
+            "true_next": 0,
+            "true_p_wo_n": 0,
+            "true_n_wo_q": 0,
+        },
+        "3": {
+            "true_prev": 0,
+            "true_next": 0,
+            "true_p_wo_n": 0,
+            "true_n_wo_q": 0,
+        },
+        "4": {
+            "true_prev": 0,
+            "true_next": 0,
+            "true_p_wo_n": 0,
+            "true_n_wo_q": 0,
+        }
+    }
+
+#209 96
+    for vid_info in position_analysis["train"]:
+        for phase in vid_info["phases"]:
+            if "caption" in phase.keys() and ("right" in phase["caption"] or "left" in phase["caption"]):
+                phase_num = phase["phase_number"]
+                for pos in phase["positions"]:
+                    if "next_ccw" in pos.keys():
+                        cnt[phase_num]["next"] += 1
+                        _cnt[phase_num]["true_next"] += int(pos["next_ccw"][-1])
+                        if not pos["next_ccw"][-1]:
+                            print(pos["next_ccw"][0])
+                        # if "prev_ccw" in pos.keys():
+                        #     _cnt[phase_num]["true_n_wo_q"] += int(pos["prev_ccw"][-1])
+                    
+                    if "prev_ccw" in pos.keys():
+                        cnt[phase_num]["prev"] += 1
+                        _cnt[phase_num]["true_prev"] += int(pos["prev_ccw"][-1])
+                        # if "next_ccw" in pos.keys():
+                        #     _cnt[phase_num]["true_p_wo_n"] += int(pos["next_ccw"][-1])
+
+    print(cnt)
+    print(_cnt)
 
 
 if __name__ == '__main__':
@@ -168,3 +314,4 @@ if __name__ == '__main__':
     NGRAM = args.ngram
 
     run_analysis(ANALYSIS_DIR, OUTPUT_DIR, CAPTION_DIR, BBOX_DIR, VIEW, NGRAM)
+    run_eda(OUTPUT_DIR)
