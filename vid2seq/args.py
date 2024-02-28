@@ -138,6 +138,7 @@ def get_args_parser():
         default=None,
     )
 
+    # Rules
     parser.add_argument(
         "--rule_mode",
         default="pedestrian",
