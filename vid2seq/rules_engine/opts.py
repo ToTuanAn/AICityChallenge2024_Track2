@@ -38,6 +38,7 @@ class Config(dict):
 class Opts(ArgumentParser):
     def __init__(self, cfg: Optional[str] = None):
         super(Opts, self).__init__(formatter_class=RawDescriptionHelpFormatter)
+        self.cfg_path = cfg
         # self.add_argument(
         #     "--rule_config_path", default=cfg, help="rule config path"
         # )
@@ -46,12 +47,12 @@ class Opts(ArgumentParser):
         # )
 
     def parse_args(self, argv=None):
-        args = super(Opts, self).parse_args(argv)
+        # args = super(Opts, self).parse_args(argv)
         # assert args.rule_config_path is not None, "Please specify --rule_config_path=configure_file_path."
         # args.opt = self._parse_opt(args.opt)
-        print("Args: ", args)
-
-        config = Config(args.rule_config_path)
+        # print("Args: ", args)
+        print("Hit")
+        config = Config(self.cfg_path)
         # config = self.override(config, args.opt)
         return config
 
