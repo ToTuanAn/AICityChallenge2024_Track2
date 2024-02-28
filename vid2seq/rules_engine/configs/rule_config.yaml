@@ -1,8 +1,9 @@
 pedestrian:
-  WeatherRules:
-    params:
-      name: 'Haha'
-vehicle:
-  WeatherRules:
+  DummyRules:
     params:
       name: 'Hihi'
+vehicle:
+  BrightnessRules:
+    params:
+      video_images_folder: "data/IMAGES"
+      color_intensity_threshold: 60

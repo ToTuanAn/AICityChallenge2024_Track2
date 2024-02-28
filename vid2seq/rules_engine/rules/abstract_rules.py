@@ -2,5 +2,12 @@ class AbstractRules:
     def __init__(self, kwargs):
         pass
     
-    def execute(self, output: str):
-        return output
+    def execute(self, preds: str):
+        return preds
+
+class DummyRules(AbstractRules):
+    def __init__(self, kwargs):
+        pass
+    
+    def execute(self, preds: str):
+        return preds
