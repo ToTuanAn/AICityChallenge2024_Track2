@@ -185,6 +185,8 @@ def main(args):
                   device)
     
     print("Inference finished")
+
+    print(args)
     rule_executor = RulesExecutor(config_path=args.rule_config_path)
     preds = rule_executor.run(preds, rule_mode=args.rule_mode)
 
