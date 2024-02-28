@@ -5,6 +5,7 @@ import random
 import argparse
 import numpy as np
 from torch.utils.data import Dataset, DataLoader
+from tqdm import tqdm
 
 from args import get_args_parser
 from model import build_vid2seq_model, _get_tokenizer
@@ -112,7 +113,7 @@ def infer(model,
 
     res = {}
 
-    for i, batch_dict in enumerate(dataloader):
+    for i, batch_dict in tqdm(enumerate(dataloader)):
         # batch_size_val must be 1
         input_text = batch_dict['input_text'][0]
         input_tokenized = tokenizer(input_text,
