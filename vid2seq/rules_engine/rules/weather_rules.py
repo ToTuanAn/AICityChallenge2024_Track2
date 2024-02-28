@@ -1,8 +1,8 @@
 from .abstract_rules import AbstractRules 
 
 class WeatherRules(AbstractRules):
-    def __init__(kwargs):
-        pass
+    def __init__(self, kwargs):
+        super().__init__(kwargs)
 
-    def execute(ouput: str):
+    def execute(self, output: str):
         return output

@@ -1,6 +1,6 @@
 class AbstractRules:
-    def __init__(kwargs):
+    def __init__(self, kwargs):
         pass
     
-    def execute(output: str):
+    def execute(self, output: str):
         return output
