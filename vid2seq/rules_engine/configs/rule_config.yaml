@@ -5,5 +5,5 @@ pedestrian:
 vehicle:
   BrightnessRules:
     params:
-      video_images_folder: "data/IMAGES"
+      video_images_folder: "vehicle_external_data/IMAGES"
       color_intensity_threshold: 60

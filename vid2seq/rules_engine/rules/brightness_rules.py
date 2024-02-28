@@ -36,7 +36,7 @@ class BrightnessRules(AbstractRules):
             ("clear and bright", "clear and dark"),
             ("Despite the brightness", "Despite the darkness"),
             ("Despite the surroundings being bright", "Despite the surroundings being dark"),
-            ("In the bright ", "In the dark "), ("in the bright ", "in the dark ")
+            ("In the bright ", "In the dark "), ("in the bright ", "in the dark "),
 
             ("The environment is bright", "The environment is dark"), ("The environment is bright", "The environment is dark") ,
             ("The brightness is bright", "The brightness is dark"), ("The brightness was bright", "The brightness was dark"),
