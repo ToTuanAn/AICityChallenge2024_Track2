@@ -17,8 +17,8 @@ python -m torch.distributed.launch --nproc_per_node 1 \
                                     --wts_test_json_path data/wts/pedestrian_test.json \
                                     --load $pedestrian_ckpt_path \
                                     --save $pedestrian_pred_path \
-                                    --rule_mode="pedestrian" \
-                                    --rule_config_path="rules_engine/configs/rule_config.yaml"
+                                    --rule_mode pedestrian \
+                                    --rule_config_path rules_engine/configs/rule_config.yaml
 
 rm -r data
 
@@ -36,8 +36,8 @@ python -m torch.distributed.launch --nproc_per_node 1 \
                                     --wts_test_json_path data/wts/vehicle_test.json \
                                     --load $vehicle_ckpt_path \
                                     --save $vehicle_pred_path \
-                                    --rule_mode="vehicle" \
-                                    --rule_config_path="rules_engine/configs/rule_config.yaml"
+                                    --rule_mode vehicle \
+                                    --rule_config_path rules_engine/configs/rule_config.yaml
 
 python postprocessing.py --pedestrian $pedestrian_pred_path \
                          --vehicle $vehicle_pred_path \
