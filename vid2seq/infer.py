@@ -188,8 +188,12 @@ def main(args):
 
     print("Rule config path: ", args.rule_config_path)
     print("Rule mode: ", args.rule_mode)
+    
     rule_executor = RulesExecutor(config_path=args.rule_config_path)
     preds = rule_executor.run(preds, rule_mode=args.rule_mode)
+
+    print(f"Finished {args.rule_mode} rules")
+
 
     with open(args.save, 'w') as f:
         json.dump(preds, f, indent=4)
