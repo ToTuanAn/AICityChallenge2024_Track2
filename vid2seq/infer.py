@@ -186,7 +186,8 @@ def main(args):
     
     print("Inference finished")
 
-    print(args)
+    print("Rule config path: ", args.rule_config_path)
+    print("Rule mode: ", args.rule_mode)
     rule_executor = RulesExecutor(config_path=args.rule_config_path)
     preds = rule_executor.run(preds, rule_mode=args.rule_mode)
 
