@@ -113,8 +113,9 @@ def infer(model,
 
     res = {}
 
-    for i, batch_dict in tqdm(enumerate(dataloader)):
+    for i, batch_dict in enumerate(dataloader):
         # batch_size_val must be 1
+        print(f"Processing video {str(i)} / {str(len(dataloader))}") 
         input_text = batch_dict['input_text'][0]
         input_tokenized = tokenizer(input_text,
                                     padding='longest',

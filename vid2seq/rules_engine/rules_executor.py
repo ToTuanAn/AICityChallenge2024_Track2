@@ -12,7 +12,7 @@ class RulesExecutor:
             self.pedestrian_rules.append(RULE_REGISTRY.get(pedestrian_rule)(cfg["pedestrian"][pedestrian_rule]["params"]))
         
         for vehicle_rule in cfg["vehicle"]:
-            self.vehicle_rules.append(RULE_REGISTRY.get(vehicle_rule)(cfg["pedestrian"][vehicle_rule]["params"]))
+            self.vehicle_rules.append(RULE_REGISTRY.get(vehicle_rule)(cfg["vehicle"][vehicle_rule]["params"]))
 
 
     def run(self, raw_output, rule_mode="pedestrian"):
