@@ -1,5 +1,5 @@
 pedestrian:
   WeatherRules:
     params:
-      
+      name: 'Haha'
 vehicle:
