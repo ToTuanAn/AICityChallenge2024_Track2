@@ -15,11 +15,11 @@ python -m torch.distributed.launch --nproc_per_node 1 \
                                     --max_input_tokens 256 \
                                     --max_output_tokens 256 \
                                     --wts_test_json_path data/wts/pedestrian_test.json \
-                                    --load $pedestrian_ckpt_path \
-                                    --save $pedestrian_pred_path \
                                     --rule_mode pedestrian \
-                                    --rule_config_path rules_engine/configs/rule_config.yaml
-
+                                    --rule_config_path rules_engine/configs/rule_config.yaml \
+                                    --load $pedestrian_ckpt_path \
+                                    --save $pedestrian_pred_path 
+                                    
 rm -r data
 
 mkdir data
@@ -33,11 +33,11 @@ python -m torch.distributed.launch --nproc_per_node 1 \
                                     --batch_size_val 1 \
                                     --max_input_tokens 256 \
                                     --max_output_tokens 256 \
-                                    --wts_test_json_path data/wts/vehicle_test.json \
-                                    --load $vehicle_ckpt_path \
-                                    --save $vehicle_pred_path \
+                                    --wts_test_json_path data/wts/vehicle_test.json 
                                     --rule_mode vehicle \
-                                    --rule_config_path rules_engine/configs/rule_config.yaml
+                                    --rule_config_path rules_engine/configs/rule_config.yaml \
+                                    --load $vehicle_ckpt_path \
+                                    --save $vehicle_pred_path 
 
 python postprocessing.py --pedestrian $pedestrian_pred_path \
                          --vehicle $vehicle_pred_path \
