@@ -3,3 +3,6 @@ pedestrian:
     params:
       name: 'Haha'
 vehicle:
+  WeatherRules:
+    params:
+      name: 'Hihi'
