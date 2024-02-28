@@ -185,8 +185,8 @@ def main(args):
                   device)
     
 
-    # rule_executor = RulesExecutor(config_path="../rules_engine/configs/rule_config.yaml")
-    # preds = rule_executor.run(preds)
+    rule_executor = RulesExecutor(config_path=args.rule_config_path)
+    preds = rule_executor.run(preds, rule_mode=args.rule_mode)
 
     with open(args.save, 'w') as f:
         json.dump(preds, f, indent=4)

@@ -138,6 +138,16 @@ def get_args_parser():
         default=None,
     )
 
+    parser.add_argument(
+        "--rule_mode",
+        default="pedestrian",
+    )
+
+    parser.add_argument(
+        "--rule_config_path",
+        default="rules_engine/configs/rule_config.yaml",
+    )
+
     # Training hyper-parameters
     parser.add_argument(
         "--denoising", default=1.0, type=float, help="denoising loss coef"
