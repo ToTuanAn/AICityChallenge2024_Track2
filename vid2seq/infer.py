@@ -138,7 +138,14 @@ def infer(model,
                                 temperature=1)
 
         video_id = batch_dict['video_id'][0]
-        clip_ids = [video_id + "#" + str(i) for i in range(5)]
+        clip_ids = []
+
+        if len(output) < 5:
+            clip_ids = [video_id + "#" + str(5-len(output)+i) for i in range(len(output))]
+        else:
+            clip_ids = [video_id + "#" + str(i) for i in range(len(output))]
+
+        # clip_ids = [video_id + "#" + str(i) for i in range(5)]
         for clip_id, pred in zip(clip_ids, output):
             res[clip_id] = pred
 

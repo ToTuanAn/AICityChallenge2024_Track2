@@ -60,6 +60,8 @@ class BrightnessRules(AbstractRules):
             sentence = preds[key]
             
             new_sentence = self.brightness_rule(image_path=image_path, sentence=sentence)
+            if new_sentence != sentence:
+                print("Hit")
 
             if key not in new_preds:
                 new_preds[key] = new_sentence
