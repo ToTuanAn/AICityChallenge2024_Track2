@@ -3,7 +3,7 @@ pedestrian:
     params:
       name: 'Hihi'
 vehicle:
-  BrightnessRules:
+  DummyRules:
     params:
-      video_images_folder: "data/vehicle_external_data/IMAGES"
-      color_intensity_threshold: 60
+      name: 'Hihi'
+
