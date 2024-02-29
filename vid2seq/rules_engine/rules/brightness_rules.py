@@ -29,9 +29,9 @@ class BrightnessRules(AbstractRules):
         average_color = np.average(average_color_row, axis=0)
 
         set_of_rules = [
-            ("bright day","dark day"), ("bright environment, dark environment"), ("bright brightness,dark brightness"),  
+            ("bright day","dark day"), ("bright environment", "dark environment"), ("bright brightness", "dark brightness"),  
             ("bright surroundings", "dark surroundings") , ("bright lighting conditions", "dark lighting conditions"), 
-            ("bright outside", "dark outside") , ("bright conditions, dark conditions"), ("bright visibility", "dark visibility"),
+            ("bright outside", "dark outside") , ("bright conditions", "dark conditions"), ("bright visibility", "dark visibility"),
 
             ("clear and bright", "clear and dark"),
             ("Despite the brightness", "Despite the darkness"),
@@ -45,7 +45,7 @@ class BrightnessRules(AbstractRules):
             ("The lightning conditions are bright", "The lightning conditions are dark"), ("The lightning conditions were bright", "The lightning conditions were dark")
         ]
         
-        if np.average(average_color, axis=0) <= self.color_intensity_thres:
+        if np.average(average_color, axis=0) <= int(self.color_intensity_thres):
             for old, new in set_of_rules:
                 sentence = sentence.replace(old, new)
                 
