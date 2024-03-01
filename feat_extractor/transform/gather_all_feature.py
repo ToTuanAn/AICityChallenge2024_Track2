@@ -6,8 +6,8 @@ hit = 0
 # for folder in glob.glob("./data/features/train/*/*"):
 
 VIDEO_PATH = "./data/videos"
-FEATURE_PATH = "./data/features"
-TRAIN_OR_VAL = "val"
+FEATURE_PATH = "./data/augment_features"
+TRAIN_OR_VAL = "train"
 PREDESTRIAN_OR_VEHICLE = "*"
 
 for folder in glob.glob(f"{FEATURE_PATH}/{TRAIN_OR_VAL}/*/{PREDESTRIAN_OR_VEHICLE}"):
@@ -19,7 +19,7 @@ for folder in glob.glob(f"{FEATURE_PATH}/{TRAIN_OR_VAL}/*/{PREDESTRIAN_OR_VEHICL
         video_name = npyfile.split('/')[-1][:-4]
 
         if video_name[-4:] != "BLUR":
-            video_name = video_name + ""
+            video_name = video_name + "_ROTATE"
             hit += 1
             print("Hit")
 

@@ -5,10 +5,12 @@ import random
 import argparse
 import numpy as np
 from torch.utils.data import Dataset, DataLoader
+from tqdm import tqdm
 
 from args import get_args_parser
 from model import build_vid2seq_model, _get_tokenizer
 
+from rules_engine.rules_executor import RulesExecutor
 
 class TestDataset(Dataset):
     def __init__(self,
@@ -113,6 +115,7 @@ def infer(model,
 
     for i, batch_dict in enumerate(dataloader):
         # batch_size_val must be 1
+        print(f"Processing video {str(i)} / {str(len(dataloader))}") 
         input_text = batch_dict['input_text'][0]
         input_tokenized = tokenizer(input_text,
                                     padding='longest',
@@ -135,7 +138,14 @@ def infer(model,
                                 temperature=1)
 
         video_id = batch_dict['video_id'][0]
-        clip_ids = [video_id + "#" + str(i) for i in range(5)]
+        clip_ids = []
+
+        if len(output) < 5:
+            clip_ids = [video_id + "#" + str(5-len(output)+i) for i in range(len(output))]
+        else:
+            clip_ids = [video_id + "#" + str(i) for i in range(len(output))]
+
+        # clip_ids = [video_id + "#" + str(i) for i in range(5)]
         for clip_id, pred in zip(clip_ids, output):
             res[clip_id] = pred
 
@@ -182,6 +192,17 @@ def main(args):
                   tokenizer,
                   dataloader_test,
                   device)
+    
+    print("Inference finished")
+
+    print("Rule config path: ", args.rule_config_path)
+    print("Rule mode: ", args.rule_mode)
+    
+    rule_executor = RulesExecutor(config_path=args.rule_config_path)
+    preds = rule_executor.run(preds, rule_mode=args.rule_mode)
+
+    print(f"Finished {args.rule_mode} rules")
+
 
     with open(args.save, 'w') as f:
         json.dump(preds, f, indent=4)
