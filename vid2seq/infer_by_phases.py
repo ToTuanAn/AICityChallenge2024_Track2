@@ -121,21 +121,23 @@ def infer_by_phases(model,
     for i, batch_dict in enumerate(dataloader):
         # batch_size_val must be 1
         print(f"Processing video {str(i)} / {str(len(dataloader))}") 
-        input_text = batch_dict['input_text'][0]
+    
+        phase_idx = 100
+        for idx, label in enumerate(batch_dict['label'][0]):
+            if label == str(phase):
+                phase_idx = idx
+        
+        input_text = [batch_dict['input_text'][0][phase_idx]]
         input_tokenized = tokenizer(input_text,
                                     padding='longest',
                                     truncation=True,
                                     max_length=args.max_input_tokens,
                                     return_tensors='pt').to(device)
 
-        phase_idx = 100
-        for idx, label in enumerate(batch_dict['label'][0]):
-            if label == str(phase):
-                phase_idx = idx
-
         print("Phase idx: ", phase_idx)
         print("Len: ", len(batch_dict['video'][0]))
         print("Len of phases: ", len(batch_dict['video'][0][phase_idx]))
+        
         video = torch.from_numpy(np.array([batch_dict['video'][0][phase_idx]]))
         print("Len of video: ", len(video))
         video = video.to(device)
