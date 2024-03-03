@@ -122,11 +122,16 @@ def infer_by_phases(model,
         # batch_size_val must be 1
         print(f"Processing video {str(i)} / {str(len(dataloader))}") 
     
-        phase_idx = 100
+        phase_idx = -1
+        phase_exist = False
         for idx, label in enumerate(batch_dict['label'][0]):
             if label == str(phase):
+                phase_exist = True
                 phase_idx = idx
         
+        if not phase_exist:
+            continue
+
         input_text = [batch_dict['input_text'][0][phase_idx]]
         input_tokenized = tokenizer(input_text,
                                     padding='longest',
@@ -153,8 +158,6 @@ def infer_by_phases(model,
                                 length_penalty=args.length_penalty,
                                 num_captions=1,
                                 temperature=1)
-        
-        # print(output)
 
         video_id = batch_dict['video_id'][0][phase_idx]
         clip_ids = [video_id + "#" + str(phase)]
