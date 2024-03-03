@@ -135,7 +135,7 @@ def infer_by_phases(model,
 
         print("Phase idx: ", phase_idx)
 
-        video = [batch_dict['video'][0][phase_idx]]
+        video = torch.Tensor([batch_dict['video'][0][phase_idx]])
         video = video.to(device)
 
         output = model.generate(video=video,
@@ -149,6 +149,8 @@ def infer_by_phases(model,
                                 length_penalty=args.length_penalty,
                                 num_captions=1,
                                 temperature=1)
+        
+        print(output)
 
         video_id = batch_dict['video_id'][0][phase_idx]
         clip_ids = [video_id + "#" + str(phase)]
