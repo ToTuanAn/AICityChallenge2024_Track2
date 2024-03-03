@@ -134,8 +134,9 @@ def infer_by_phases(model,
                 phase_idx = idx
 
         print("Phase idx: ", phase_idx)
-
-        video = torch.Tensor([batch_dict['video'][0][phase_idx]])
+        print("Len: ", len(batch_dict['video'][0]))
+        print("Len of phases: ", len(batch_dict['video'][0][phase_idx]))
+        video = np.array(batch_dict['video'][0][phase_idx])
         video = video.to(device)
 
         output = model.generate(video=video,
