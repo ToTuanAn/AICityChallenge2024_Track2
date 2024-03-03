@@ -134,12 +134,12 @@ def infer_by_phases(model,
                                     max_length=args.max_input_tokens,
                                     return_tensors='pt').to(device)
 
-        print("Phase idx: ", phase_idx)
-        print("Len: ", len(batch_dict['video'][0]))
-        print("Len of phases: ", len(batch_dict['video'][0][phase_idx]))
-        
+        # print("Phase idx: ", phase_idx)
+        # print("Len: ", len(batch_dict['video'][0]))
+        # print("Len of phases: ", len(batch_dict['video'][0][phase_idx]))
+
         video = torch.from_numpy(np.array([batch_dict['video'][0][phase_idx]]))
-        print("Len of video: ", len(video))
+        # print("Len of video: ", len(video))
         video = video.to(device)
 
         output = model.generate(video=video,
@@ -154,7 +154,7 @@ def infer_by_phases(model,
                                 num_captions=1,
                                 temperature=1)
         
-        print(output)
+        # print(output)
 
         video_id = batch_dict['video_id'][0][phase_idx]
         clip_ids = [video_id + "#" + str(phase)]
