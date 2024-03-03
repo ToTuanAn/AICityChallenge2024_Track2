@@ -8,7 +8,7 @@ cp -r $pedestrian_data_path data
 
 python -m torch.distributed.launch --nproc_per_node 1 \
                                     --use_env \
-                                    infer_by_phase.py \
+                                    infer_by_phases.py \
                                     --combine_datasets wts \
                                     --model_name google-t5/t5-large \
                                     --batch_size_val 1 \
@@ -36,7 +36,7 @@ cp -r $vehicle_data_path data
 
 python -m torch.distributed.launch --nproc_per_node 1 \
                                     --use_env \
-                                    infer_by_phase.py \
+                                    infer_by_phases.py \
                                     --combine_datasets wts \
                                     --model_name google-t5/t5-large \
                                     --batch_size_val 1 \
