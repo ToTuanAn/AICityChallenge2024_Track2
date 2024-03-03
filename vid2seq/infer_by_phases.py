@@ -136,7 +136,7 @@ def infer_by_phases(model,
         print("Phase idx: ", phase_idx)
         print("Len: ", len(batch_dict['video'][0]))
         print("Len of phases: ", len(batch_dict['video'][0][phase_idx]))
-        video = torch.from_numpy(np.array(batch_dict['video'][0][phase_idx]))
+        video = torch.from_numpy(np.array([batch_dict['video'][0][phase_idx]]))
         print("Len of video: ", len(video))
         video = video.to(device)
 
