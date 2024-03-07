@@ -1,0 +1,91 @@
+| distributed init (rank 0): env://
+Namespace(combine_datasets=['wts'], combine_datasets_val=['wts'], howto100m_train_csv_path='data/howto100m/htm_vid2seq.csv', howto100m_features_path='data/howto100m_clip_features', howto100m_subtitles_path='data/htm_sentences', youcook_features_path='data/YouCook2/clipvitl14.pth', youcook_train_json_path='data/YouCook2/train.json', youcook_val_json_path='data/YouCook2/val.json', youcook_subtitles_path='data/YouCook2/youcook2_asr_align_proc.pkl', vitt_features_path='data/ViTT/clipvitl14.pth', vitt_train_json_path='data/ViTT/train.json', vitt_val_json_path='data/ViTT/dev.json', vitt_test_json_path='data/ViTT/test.json', vitt_subtitles_path='data/ViTT/subtitles_align_proc.pkl', chapters_features_path='data/chapters_clipvitl14_features', chapters_train_json_path='data/AllChapters/chapters_dvc_train.json', chapters_val_json_path='data/AllChapters/chapters_dvc_val.json', chapters_test_json_path='data/AllChapters/chapters_dvc_test.json', chapters_subtitles_path='data/allchapters_asr', wts_features_path='data/wts/CLIP_FEATURES', wts_train_json_path='data/wts/pedestrian_train.json', wts_val_json_path='data/wts/pedestrian_val.json', wts_test_json_path='data/wts/pedestrian_val.json', wts_subtitles_path=None, denoising=1.0, generative=1.0, genasr=False, random=False, mask_prob=0.25, mask_len=5, lr=0.0003, beta1=0.9, beta2=0.999, batch_size=48, batch_size_val=1, weight_decay=0, epochs=2, optimizer='adam', label_smoothing=0.1, clip_max_norm=1.0, schedule='cosine_with_warmup', fraction_warmup_steps=0.1, eval_skip=1, print_freq=100, save_dir='TOFILL/baseline_pedestrian2222222', presave_dir='TOFILL', device='cuda', seed=42, load='', resume=False, start_epoch=0, eval=False, num_workers=3, world_size=1, dist_url='env://', model_name='backbone/t5-base', bert_name='bert-base-uncased', text_encoder_dropout=0.1, text_decoder_dropout=0.1, visual_encoder_dropout=0.1, max_feats=100, features_dim=768, embedding_dim=768, mlp_dim=2048, depth=12, heads=12, num_bins=100, use_video=True, use_speech=False, max_input_tokens=256, max_output_tokens=256, num_beams=4, length_penalty=1.0, repetition_penalty=1.0, top_p=0.9, blip2_model_name='pretrain_flant5xl_vitL', resolution=224, video_example='', asr_example='', wandb_project=None, wandb_entity=None, wandb_name=None, rank=0, gpu=0, distributed=True, dist_backend='nccl')
+No subtitles given or found.
+No subtitles given or found.
+You are using the default legacy behaviour of the <class 'transformers.models.t5.tokenization_t5.T5Tokenizer'>. This is expected, and simply means that the `legacy` (previous) behavior will be used so nothing changes for you. If you want to use the new behaviour, set `legacy=False`. This should only be set if you understand what it means, and thouroughly read the reason why this was added as explained in https://github.com/huggingface/transformers/pull/24565
+Special tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.
+number of params: 289128192
+Start training
+Starting epoch 0
+Epoch: [0]  [0/7]  eta: 0:01:17  loss: 10.3201 (10.3201)  lr: 0.0000 (0.0000)  time: 11.1030  data: 3.2668  max mem: 23187
+Epoch: [0]  [6/7]  eta: 0:00:02  loss: 7.5884 (7.6860)  lr: 0.0003 (0.0002)  time: 2.3567  data: 0.4673  max mem: 27178
+Epoch: [0] Total time: 0:00:16 (2.3678 s / it)
+Averaged stats: loss: 7.5884 (7.6860)  lr: 0.0003 (0.0002)
+Validating wts
+val:  [  0/163]  eta: 0:18:27    time: 6.7919  data: 0.2845  max mem: 27178
+val:  [100/163]  eta: 0:04:02    time: 3.8858  data: 0.0010  max mem: 27178
+val:  [162/163]  eta: 0:00:03    time: 3.8054  data: 0.0008  max mem: 27178
+val: Total time: 0:10:25 (3.8351 s / it)
+Preprocessing results...
+Done.
+tokenization...
+PTBTokenizer tokenized 209454 tokens at 562522.14 tokens per second.
+PTBTokenizer tokenized 129002 tokens at 657828.68 tokens per second.
+setting up scorers...
+computing Bleu score...
+{'testlen': 113485, 'reflen': 208640, 'guess': [113485, 112670, 111855, 111040], 'correct': [2834, 0, 0, 0]}
+ratio: 0.5439273389570526
+Bleu_1: 0.011
+Bleu_2: 0.000
+Bleu_3: 0.000
+Bleu_4: 0.000
+computing METEOR score...
+METEOR: 0.006
+computing Rouge score...
+ROUGE_L: 0.017
+computing CIDEr score...
+CIDEr: 0.000
+Starting epoch 1
+Epoch: [1]  [0/7]  eta: 0:00:07  loss: 6.5818 (6.5818)  lr: 0.0002 (0.0002)  time: 1.1250  data: 0.2635  max mem: 27178
+Epoch: [1]  [6/7]  eta: 0:00:00  loss: 6.4124 (6.4377)  lr: 0.0001 (0.0001)  time: 0.9097  data: 0.0382  max mem: 27179
+Epoch: [1] Total time: 0:00:06 (0.9154 s / it)
+Averaged stats: loss: 6.4124 (6.4377)  lr: 0.0001 (0.0001)
+Validating wts
+val:  [  0/163]  eta: 0:11:16    time: 4.1490  data: 0.2022  max mem: 27179
+val:  [100/163]  eta: 0:03:59    time: 3.7786  data: 0.0008  max mem: 27179
+val:  [162/163]  eta: 0:00:03    time: 3.7941  data: 0.0008  max mem: 27179
+val: Total time: 0:10:18 (3.7929 s / it)
+Preprocessing results...
+Done.
+tokenization...
+PTBTokenizer tokenized 92462 tokens at 645027.51 tokens per second.
+PTBTokenizer tokenized 129002 tokens at 726489.90 tokens per second.
+setting up scorers...
+computing Bleu score...
+{'testlen': 113485, 'reflen': 91648, 'guess': [113485, 112670, 111855, 111040], 'correct': [4942, 0, 0, 0]}
+ratio: 1.2382703386871372
+Bleu_1: 0.044
+Bleu_2: 0.000
+Bleu_3: 0.000
+Bleu_4: 0.000
+computing METEOR score...
+METEOR: 0.017
+computing Rouge score...
+ROUGE_L: 0.029
+computing CIDEr score...
+CIDEr: 0.000
+Training time 0:22:22
+loading best checkpoint from epoch 1
+test:  [  0/163]  eta: 0:11:05    time: 4.0839  data: 0.1915  max mem: 27179
+test:  [100/163]  eta: 0:03:59    time: 3.7897  data: 0.0008  max mem: 27179
+test:  [162/163]  eta: 0:00:03    time: 3.7890  data: 0.0008  max mem: 27179
+test: Total time: 0:10:18 (3.7975 s / it)
+Preprocessing results...
+Done.
+tokenization...
+PTBTokenizer tokenized 92462 tokens at 566160.41 tokens per second.
+PTBTokenizer tokenized 129002 tokens at 713908.57 tokens per second.
+setting up scorers...
+computing Bleu score...
+{'testlen': 113485, 'reflen': 91648, 'guess': [113485, 112670, 111855, 111040], 'correct': [4942, 0, 0, 0]}
+ratio: 1.2382703386871372
+Bleu_1: 0.044
+Bleu_2: 0.000
+Bleu_3: 0.000
+Bleu_4: 0.000
+computing METEOR score...
+METEOR: 0.017
+computing Rouge score...
+ROUGE_L: 0.029
+computing CIDEr score...
+CIDEr: 0.000

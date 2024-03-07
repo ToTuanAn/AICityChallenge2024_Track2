@@ -1,0 +1,46 @@
+Traceback (most recent call last):
+  File "/media/ddien/minhnam/tmp/AICityChallenge2024_Track2/vid2seq/vc.py", line 452, in <module>
+    main(args)
+  File "/media/ddien/minhnam/tmp/AICityChallenge2024_Track2/vid2seq/vc.py", line 185, in main
+    dist.init_distributed_mode(args)
+  File "/media/ddien/minhnam/tmp/AICityChallenge2024_Track2/vid2seq/util/dist.py", line 225, in init_distributed_mode
+    torch.cuda.set_device(args.gpu)
+  File "/media/ddien/miniconda3/envs/llama/lib/python3.10/site-packages/torch/cuda/__init__.py", line 408, in set_device
+    torch._C._cuda_setDevice(device)
+  File "/media/ddien/miniconda3/envs/llama/lib/python3.10/site-packages/torch/cuda/__init__.py", line 302, in _lazy_init
+    torch._C._cuda_init()
+RuntimeError: No CUDA GPUs are available
+[2024-02-02 15:50:59,143] torch.distributed.elastic.multiprocessing.api: [ERROR] failed (exitcode: 1) local_rank: 0 (pid: 2605097) of binary: /media/ddien/miniconda3/envs/llama/bin/python
+Traceback (most recent call last):
+  File "/media/ddien/miniconda3/envs/llama/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/media/ddien/miniconda3/envs/llama/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/media/ddien/miniconda3/envs/llama/lib/python3.10/site-packages/torch/distributed/launch.py", line 198, in <module>
+    main()
+  File "/media/ddien/miniconda3/envs/llama/lib/python3.10/site-packages/torch/distributed/launch.py", line 194, in main
+    launch(args)
+  File "/media/ddien/miniconda3/envs/llama/lib/python3.10/site-packages/torch/distributed/launch.py", line 179, in launch
+    run(args)
+  File "/media/ddien/miniconda3/envs/llama/lib/python3.10/site-packages/torch/distributed/run.py", line 803, in run
+    elastic_launch(
+  File "/media/ddien/miniconda3/envs/llama/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 135, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/media/ddien/miniconda3/envs/llama/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 268, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+vc.py FAILED
+------------------------------------------------------------
+Failures:
+  <NO_OTHER_FAILURES>
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2024-02-02_15:50:59
+  host      : gpu02
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 2605097)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================

@@ -1,0 +1,162 @@
+Token will not been saved to git credential helper. Pass `add_to_git_credential=True` if you want to set the git credential as well.
+Token is valid (permission: write).
+Your token has been saved to /home/ddien/.cache/huggingface/token
+Login successful
+| distributed init (rank 0): env://
+Namespace(combine_datasets=['wts'], combine_datasets_val=['wts'], howto100m_train_csv_path='data/howto100m/htm_vid2seq.csv', howto100m_features_path='data/howto100m_clip_features', howto100m_subtitles_path='data/htm_sentences', youcook_features_path='data/YouCook2/clipvitl14.pth', youcook_train_json_path='data/YouCook2/train.json', youcook_val_json_path='data/YouCook2/val.json', youcook_subtitles_path='data/YouCook2/youcook2_asr_align_proc.pkl', vitt_features_path='data/ViTT/clipvitl14.pth', vitt_train_json_path='data/ViTT/train.json', vitt_val_json_path='data/ViTT/dev.json', vitt_test_json_path='data/ViTT/test.json', vitt_subtitles_path='data/ViTT/subtitles_align_proc.pkl', chapters_features_path='data/chapters_clipvitl14_features', chapters_train_json_path='data/AllChapters/chapters_dvc_train.json', chapters_val_json_path='data/AllChapters/chapters_dvc_val.json', chapters_test_json_path='data/AllChapters/chapters_dvc_test.json', chapters_subtitles_path='data/allchapters_asr', wts_features_path='data/wts/CLIP_FEATURES', wts_train_json_path='data/wts/pedestrian_train.json', wts_val_json_path='data/wts/pedestrian_val.json', wts_test_json_path='data/wts/pedestrian_val.json', wts_subtitles_path=None, denoising=1.0, generative=1.0, genasr=False, random=False, mask_prob=0.25, mask_len=5, lr=0.0003, beta1=0.9, beta2=0.999, batch_size=8, batch_size_val=1, weight_decay=0, epochs=2, optimizer='adam', label_smoothing=0.1, clip_max_norm=1.0, schedule='cosine_with_warmup', fraction_warmup_steps=0.1, eval_skip=1, print_freq=100, save_dir='TOFILL/baseline_pedestrian', presave_dir='TOFILL', device='cuda', seed=42, load='', resume=False, start_epoch=0, eval=False, num_workers=3, world_size=1, dist_url='env://', model_name='t5-base', bert_name='bert-base-uncased', text_encoder_dropout=0.1, text_decoder_dropout=0.1, visual_encoder_dropout=0.1, max_feats=100, features_dim=768, embedding_dim=768, mlp_dim=2048, depth=12, heads=12, num_bins=100, use_video=True, use_speech=False, max_input_tokens=256, max_output_tokens=256, num_beams=4, length_penalty=1.0, repetition_penalty=1.0, top_p=0.9, blip2_model_name='pretrain_flant5xl_vitL', resolution=224, video_example='', asr_example='', llama_video=True, llama_vision_encoder='tmnam20/blip2-opt-2.7b-vision', llama_language_model='meta-llama/Llama-2-7b-hf', cache_dir='./cache', wandb_project='vid2seq', wandb_entity=None, wandb_name='test_llama_video', rank=0, gpu=0, distributed=True, dist_backend='nccl')
+wandb: Currently logged in as: trmina. Use `wandb login --relogin` to force relogin
+wandb: wandb version 0.16.3 is available!  To upgrade, please run:
+wandb:  $ pip install wandb --upgrade
+wandb: Tracking run with wandb version 0.16.2
+wandb: Run data is saved locally in /media/ddien/minhnam/tmp/AICityChallenge2024_Track2/vid2seq/wandb/run-20240207_015446-3igv1mcw
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run test_llama_video
+wandb: ⭐️ View project at https://wandb.ai/trmina/vid2seq
+wandb: 🚀 View run at https://wandb.ai/trmina/vid2seq/runs/3igv1mcw
+No subtitles given or found.
+No subtitles given or found.
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:01<00:01,  1.83s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:02<00:00,  1.24s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:02<00:00,  1.33s/it]
+Freeze vision encoder
+Freeze language model
+number of params: 3,149,824
+Start training
+Starting epoch 0
+Epoch: [0]  [ 0/42]  eta: 0:01:37  loss: 5.7506 (5.7506)  lr: 0.0000 (0.0000)  time: 2.3210  data: 0.3019  max mem: 24345
+Epoch: [0]  [41/42]  eta: 0:00:00  loss: 2.0304 (3.0725)  lr: 0.0002 (0.0002)  time: 0.6752  data: 0.0008  max mem: 31983
+Epoch: [0] Total time: 0:00:30 (0.7283 s / it)
+Averaged stats: loss: 2.0304 (3.0725)  lr: 0.0002 (0.0002)
+Validating wts
+val:  [  0/163]  eta: 1:39:33    time: 36.6483  data: 0.2320  max mem: 31983
+val:  [100/163]  eta: 0:38:10    time: 36.4029  data: 0.0010  max mem: 31983
+val:  [162/163]  eta: 0:00:36    time: 36.4027  data: 0.0011  max mem: 31983
+val: Total time: 1:38:49 (36.3802 s / it)
+Preprocessing results...
+Done.
+tokenization...
+Feb 07, 2024 3:34:27 AM edu.stanford.nlp.process.PTBLexer next
+WARNING: Untokenizable:  (U+8, decimal: 8)
+PTBTokenizer tokenized 7320 tokens at 13809.05 tokens per second.
+PTBTokenizer tokenized 129002 tokens at 366056.76 tokens per second.
+setting up scorers...
+computing Bleu score...
+{'testlen': 113485, 'reflen': 5389, 'guess': [113485, 112670, 111855, 111040], 'correct': [634, 60, 10, 1]}
+ratio: 21.058637966223593
+Bleu_1: 0.006
+Bleu_2: 0.002
+Bleu_3: 0.001
+Bleu_4: 0.000
+computing METEOR score...
+METEOR: 0.010
+computing Rouge score...
+ROUGE_L: 0.004
+computing CIDEr score...
+CIDEr: 0.001
+Starting epoch 1
+Epoch: [1]  [ 0/42]  eta: 0:00:45  loss: 1.8952 (1.8952)  lr: 0.0002 (0.0002)  time: 1.0942  data: 0.3825  max mem: 31983
+Epoch: [1]  [41/42]  eta: 0:00:00  loss: 1.7183 (1.7672)  lr: 0.0000 (0.0001)  time: 0.6871  data: 0.0008  max mem: 32227
+Epoch: [1] Total time: 0:00:29 (0.7056 s / it)
+Averaged stats: loss: 1.7183 (1.7672)  lr: 0.0000 (0.0001)
+Validating wts
+val:  [  0/163]  eta: 1:40:07    time: 36.8539  data: 0.3704  max mem: 32227
+val:  [100/163]  eta: 0:38:09    time: 36.3088  data: 0.0010  max mem: 32227
+val:  [162/163]  eta: 0:00:36    time: 36.4050  data: 0.0010  max mem: 32227
+val: Total time: 1:38:42 (36.3339 s / it)
+Preprocessing results...
+Done.
+tokenization...
+Feb 07, 2024 5:15:53 AM edu.stanford.nlp.process.PTBLexer next
+WARNING: Untokenizable:  (U+8, decimal: 8)
+PTBTokenizer tokenized 8630 tokens at 7162.07 tokens per second.
+PTBTokenizer tokenized 129002 tokens at 372340.59 tokens per second.
+setting up scorers...
+computing Bleu score...
+{'testlen': 113485, 'reflen': 6882, 'guess': [113485, 112670, 111855, 111040], 'correct': [1787, 364, 70, 15]}
+ratio: 16.490119151407075
+Bleu_1: 0.016
+Bleu_2: 0.007
+Bleu_3: 0.003
+Bleu_4: 0.001
+computing METEOR score...
+METEOR: 0.028
+computing Rouge score...
+ROUGE_L: 0.015
+computing CIDEr score...
+CIDEr: 0.001
+Training time 3:23:00
+loading best checkpoint from epoch 1
+test:  [  0/163]  eta: 1:41:06    time: 37.2150  data: 0.5129  max mem: 32227
+test:  [100/163]  eta: 0:38:09    time: 36.2805  data: 0.0011  max mem: 32227
+test:  [162/163]  eta: 0:00:36    time: 36.3170  data: 0.0011  max mem: 32227
+test: Total time: 1:38:37 (36.3013 s / it)
+Preprocessing results...
+Done.
+tokenization...
+Feb 07, 2024 6:58:30 AM edu.stanford.nlp.process.PTBLexer next
+WARNING: Untokenizable:  (U+8, decimal: 8)
+PTBTokenizer tokenized 8630 tokens at 7196.25 tokens per second.
+PTBTokenizer tokenized 129002 tokens at 284139.83 tokens per second.
+setting up scorers...
+computing Bleu score...
+{'testlen': 113485, 'reflen': 6882, 'guess': [113485, 112670, 111855, 111040], 'correct': [1787, 364, 70, 15]}
+ratio: 16.490119151407075
+Bleu_1: 0.016
+Bleu_2: 0.007
+Bleu_3: 0.003
+Bleu_4: 0.001
+computing METEOR score...
+METEOR: 0.028
+computing Rouge score...
+ROUGE_L: 0.015
+computing CIDEr score...
+CIDEr: 0.001
+wandb: - 0.027 MB of 0.027 MB uploadedwandb: \ 0.027 MB of 0.027 MB uploadedwandb: | 0.027 MB of 0.027 MB uploadedwandb: / 0.027 MB of 0.027 MB uploadedwandb: - 0.027 MB of 0.027 MB uploadedwandb: \ 0.027 MB of 0.027 MB uploadedwandb: | 0.043 MB of 0.064 MB uploaded (0.005 MB deduped)wandb: / 0.044 MB of 0.067 MB uploaded (0.005 MB deduped)wandb: 
+wandb: Run history:
+wandb:                   epoch ▁█
+wandb:                    loss █▆█▇▅▄▅▃▃▃▃▂▂▂▂▂▂▂▂▂▂▁▁▁▁▂▂▁▂▁▂▂▂▂▁▁▁▁▁▂
+wandb:                      lr ▁▃▅▆███████▇▇▇▇▇▆▆▆▅▅▅▅▄▄▄▃▃▃▂▂▂▂▂▁▁▁▁▁▁
+wandb:            n_parameters ▁▁
+wandb:             test_Bleu_1 ▁
+wandb:             test_Bleu_2 ▁
+wandb:             test_Bleu_3 ▁
+wandb:             test_Bleu_4 ▁
+wandb:              test_CIDEr ▁
+wandb:             test_METEOR ▁
+wandb:            test_ROUGE_L ▁
+wandb:              train_loss █▁
+wandb:                train_lr █▁
+wandb:          val_wts_Bleu_1 ▁█
+wandb:          val_wts_Bleu_2 ▁█
+wandb:          val_wts_Bleu_3 ▁█
+wandb:          val_wts_Bleu_4 ▁█
+wandb:           val_wts_CIDEr ▁█
+wandb:          val_wts_METEOR ▁█
+wandb:         val_wts_ROUGE_L ▁█
+wandb: val_wts_averaged_4score ▁█
+wandb: 
+wandb: Run summary:
+wandb:                   epoch 1
+wandb:                    loss 1.77235
+wandb:                      lr 0.0
+wandb:            n_parameters 3149824
+wandb:             test_Bleu_1 0.01575
+wandb:             test_Bleu_2 0.00713
+wandb:             test_Bleu_3 0.00317
+wandb:             test_Bleu_4 0.00144
+wandb:              test_CIDEr 0.00081
+wandb:             test_METEOR 0.02755
+wandb:            test_ROUGE_L 0.01476
+wandb:              train_loss 1.76722
+wandb:                train_lr 7e-05
+wandb:          val_wts_Bleu_1 0.01575
+wandb:          val_wts_Bleu_2 0.00713
+wandb:          val_wts_Bleu_3 0.00317
+wandb:          val_wts_Bleu_4 0.00144
+wandb:           val_wts_CIDEr 0.00081
+wandb:          val_wts_METEOR 0.02755
+wandb:         val_wts_ROUGE_L 0.01476
+wandb: val_wts_averaged_4score 0.01114
+wandb: 
+wandb: 🚀 View run test_llama_video at: https://wandb.ai/trmina/vid2seq/runs/3igv1mcw
+wandb: ️⚡ View job at https://wandb.ai/trmina/vid2seq/jobs/QXJ0aWZhY3RDb2xsZWN0aW9uOjEzNTgzODYxMA==/version_details/v6
+wandb: Synced 6 W&B file(s), 0 media file(s), 2 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20240207_015446-3igv1mcw/logs
