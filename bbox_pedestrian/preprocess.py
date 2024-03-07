@@ -57,6 +57,11 @@ def parse_args():
         help="Point of view of video to analyze",
     )
 
+    parser.add_argument(
+        "--inference",
+        action='store_true',
+    )
+
     return parser.parse_args()
 
 
@@ -77,9 +82,46 @@ def get_frame(vid_path, output_path, vid_name, phase, sec, bbox, extend_px=50):
         cv2.imwrite(f"{output_path}/{vid_name}_{phase}.png", cropped_image)
     return hasFrames
 
+def preprocess_infer(output_dir, caption_dir, bbox_dir, video_dir, view):
+    for vid in tqdm(os.listdir(bbox_dir)):
+        bbox_path = os.path.join(bbox_dir, vid, view)
+        caption_path = os.path.join(caption_dir, vid, view)
+        output_path = os.path.join(output_dir, vid)
+        video_path = os.path.join(video_dir, vid, view)
+        if not os.path.exists(output_path):
+            os.makedirs(output_path)
+
+        try:
+            caption_data_process = {}
+            for caption_file in os.listdir(caption_path):
+                caption_file_path = os.path.join(caption_path, caption_file)
+                with open(caption_file_path, 'r') as file:
+                    caption_data = json.load(file)["event_phase"]
+                    for event in caption_data:
+                        caption_data_process[event["labels"][0]] = {"start_time": float(event["start_time"])}
+
+            for bbox_file in os.listdir(bbox_path):
+                file_path = os.path.join(bbox_path, bbox_file)
+                vid_name = bbox_file.split("_bbox")[0]
+                vid_path = os.path.join(video_path, vid_name + ".mp4")
+                try:
+                    with open(file_path, 'r') as file:
+                        bbox_data = json.load(file)
+                        bbox_data = bbox_data["annotations"]
+                        for bbox in bbox_data:
+                            get_frame(vid_path, output_path, vid_name, bbox["phase_number"], caption_data_process[bbox["phase_number"]]["start_time"], bbox["bbox"])
+                except:
+                    continue
+                break
+        except:
+            # print(e)
+            continue
+    print("success")
+
+
 def preprocess(output_dir, caption_dir, bbox_dir, video_dir, view):
     phases = ["train", "val"]
-    keyword = ["wear", "height", "wore", "dress", "worn"]
+    keyword = ["wear", "170", "cm", "wore", "dress", "worn"]
 
     for phase in phases:
         current_bbox_dir = os.path.join(bbox_dir, phase)
@@ -105,11 +147,16 @@ def preprocess(output_dir, caption_dir, bbox_dir, video_dir, view):
                             caption_description = []
                             caption_pedestrian_list = event["caption_pedestrian"].split(". ")
                             for caption_pedestrian in caption_pedestrian_list:
-                                if any(word in caption_pedestrian for word in keyword):
-                                    caption_description.append(caption_pedestrian)
-                            caption_data_process[event["labels"][0]] = {"description":
-                                                                        ". ".join(caption_description if len(caption_description) > 0 else caption_pedestrian_list[0:2]),
-                                                                        "start_time": float(event["start_time"])}
+                                caption_description_ = []
+                                for caption_pedestrian_sentence in caption_pedestrian.split(","):
+                                    if any(word in caption_pedestrian_sentence for word in keyword):
+                                        caption_description_.append(caption_pedestrian_sentence)
+                                if len(caption_description_) > 0:
+                                    caption_description.append(",".join(caption_description_))
+                            if len(caption_description) > 0:
+                                caption_data_process[event["labels"][0]] = {"description":
+                                                                            ". ".join(caption_description),
+                                                                            "start_time": float(event["start_time"])}
 
                 caption_output = {}
                 bbox_labels = set()
@@ -122,8 +169,9 @@ def preprocess(output_dir, caption_dir, bbox_dir, video_dir, view):
                             bbox_data = json.load(file)
                             bbox_data = bbox_data["annotations"]
                             for bbox in bbox_data:
-                                bbox_labels.add(bbox["phase_number"])
-                                get_frame(vid_path, output_path, vid_name, bbox["phase_number"], caption_data_process[bbox["phase_number"]]["start_time"], bbox["bbox"])
+                                if caption_data_process.get(bbox["phase_number"], None) is not None:
+                                    bbox_labels.add(bbox["phase_number"])
+                                    get_frame(vid_path, output_path, vid_name, bbox["phase_number"], caption_data_process[bbox["phase_number"]]["start_time"], bbox["bbox"])
                     except:
                         continue
 
@@ -136,7 +184,7 @@ def preprocess(output_dir, caption_dir, bbox_dir, video_dir, view):
                 # print(e)
                 continue
     print("success")
-                            
+                  
 if __name__ == '__main__':
     """
         python ./bbox_pedestrian/preprocess.py
@@ -149,5 +197,9 @@ if __name__ == '__main__':
 
     VIEW = str(args.view)
 
+    INFERENCE = args.inference
 
-    preprocess(OUTPUT_DIR, CAPTION_DIR, BBOX_DIR, VIDEO_DIR, VIEW)
+    if INFERENCE:
+        preprocess_infer(OUTPUT_DIR, CAPTION_DIR, BBOX_DIR, VIDEO_DIR, VIEW)
+    else:
+        preprocess(OUTPUT_DIR, CAPTION_DIR, BBOX_DIR, VIDEO_DIR, VIEW)

@@ -6,6 +6,7 @@ TOFILL/
 datasets/
 analysis/output/
 bbox_pedestrian/output/
+bbox_pedestrian/model/
 
 new_annotations/
 *wandb*

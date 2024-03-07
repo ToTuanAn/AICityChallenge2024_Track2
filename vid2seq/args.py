@@ -456,4 +456,56 @@ def get_args_parser():
     parser.add_argument("--wandb_name", default=None,
                         type=str, help="wandb run name")
 
+    
+    #checkpoints and save directories by phases
+    parser.add_argument(
+        "--load_internal_ckpt_phase_0",
+        default="",
+    )
+
+    parser.add_argument(
+        "--load_internal_ckpt_phase_1",
+        default="",
+    )
+
+    parser.add_argument(
+        "--load_internal_ckpt_phase_2",
+        default="",
+    )
+
+    parser.add_argument(
+        "--load_internal_ckpt_phase_3",
+        default="",
+    )
+
+    parser.add_argument(
+        "--load_internal_ckpt_phase_4",
+        default="",
+    )
+
+    parser.add_argument(
+        "--save_phase_0",
+        default="",
+    )
+
+    parser.add_argument(
+        "--save_phase_1",
+        default="",
+    )
+
+    parser.add_argument(
+        "--save_phase_2",
+        default="",
+    )
+
+    parser.add_argument(
+        "--save_phase_3",
+        default="",
+    )
+
+    parser.add_argument(
+        "--save_phase_4",
+        default="",
+    )
+
     return parser
