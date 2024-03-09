@@ -25,3 +25,8 @@ pandas
 h5py
 numpy
 sentencepiece
+boto3
+ipdb
+timm
+einops
+decord
