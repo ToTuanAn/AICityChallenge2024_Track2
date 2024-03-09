@@ -6214,3 +6214,408 @@
 2024-03-08 23:43:19,079:INFO:   Num examples = 4212
 2024-03-08 23:43:19,079:INFO:   Batch size = 1
 2024-03-08 23:43:19,079:INFO:   Num steps = 4212
+2024-03-10 00:53:34,184:INFO: Effective parameters:
+2024-03-10 00:53:34,185:INFO:   <<< batch_size: 1
+2024-03-10 00:53:34,185:INFO:   <<< batch_size_val: 1
+2024-03-10 00:53:34,185:INFO:   <<< cache_dir: 
+2024-03-10 00:53:34,185:INFO:   <<< cdcr: 0
+2024-03-10 00:53:34,185:INFO:   <<< clip_evl: True
+2024-03-10 00:53:34,185:INFO:   <<< coef_lr: 0.002
+2024-03-10 00:53:34,185:INFO:   <<< cross_model: cross-base
+2024-03-10 00:53:34,185:INFO:   <<< cross_num_hidden_layers: 4
+2024-03-10 00:53:34,185:INFO:   <<< data_path: ./data/ActivityNet/
+2024-03-10 00:53:34,185:INFO:   <<< datatype: activity
+2024-03-10 00:53:34,185:INFO:   <<< do_eval: False
+2024-03-10 00:53:34,185:INFO:   <<< do_lower_case: False
+2024-03-10 00:53:34,185:INFO:   <<< do_pretrain: False
+2024-03-10 00:53:34,185:INFO:   <<< do_train: True
+2024-03-10 00:53:34,185:INFO:   <<< epochs: 1
+2024-03-10 00:53:34,185:INFO:   <<< eval_frame_order: 0
+2024-03-10 00:53:34,185:INFO:   <<< expand_msrvtt_sentences: True
+2024-03-10 00:53:34,185:INFO:   <<< feature_framerate: 1
+2024-03-10 00:53:34,185:INFO:   <<< features_path: /home/totuanan/Workplace/AICityChallenge2024_Track2/feat_extractor/data/retrieval/videos
+2024-03-10 00:53:34,185:INFO:   <<< fp16: False
+2024-03-10 00:53:34,185:INFO:   <<< fp16_opt_level: O1
+2024-03-10 00:53:34,185:INFO:   <<< freeze_layer_num: 0
+2024-03-10 00:53:34,185:INFO:   <<< gpu: 0
+2024-03-10 00:53:34,185:INFO:   <<< gradient_accumulation_steps: 1
+2024-03-10 00:53:34,185:INFO:   <<< hard_negative_rate: 0.5
+2024-03-10 00:53:34,185:INFO:   <<< init_model: None
+2024-03-10 00:53:34,185:INFO:   <<< interaction: no
+2024-03-10 00:53:34,185:INFO:   <<< linear_patch: 2d
+2024-03-10 00:53:34,185:INFO:   <<< local_rank: 0
+2024-03-10 00:53:34,185:INFO:   <<< loose_type: True
+2024-03-10 00:53:34,185:INFO:   <<< lr: 0.001
+2024-03-10 00:53:34,185:INFO:   <<< lr_decay: 0.9
+2024-03-10 00:53:34,185:INFO:   <<< margin: 0.1
+2024-03-10 00:53:34,185:INFO:   <<< max_frames: 64
+2024-03-10 00:53:34,185:INFO:   <<< max_words: 77
+2024-03-10 00:53:34,185:INFO:   <<< mergeclip: False
+2024-03-10 00:53:34,185:INFO:   <<< mergeweight: 0.5
+2024-03-10 00:53:34,185:INFO:   <<< n_display: 50
+2024-03-10 00:53:34,185:INFO:   <<< n_gpu: 1
+2024-03-10 00:53:34,185:INFO:   <<< n_pair: 1
+2024-03-10 00:53:34,185:INFO:   <<< negative_weighting: 1
+2024-03-10 00:53:34,185:INFO:   <<< num_thread_reader: 1
+2024-03-10 00:53:34,185:INFO:   <<< output_dir: vidintern_output
+2024-03-10 00:53:34,185:INFO:   <<< pretrained_clip_name: ViT-L/14
+2024-03-10 00:53:34,185:INFO:   <<< pretrained_path: ViT-L/14
+2024-03-10 00:53:34,185:INFO:   <<< rank: 0
+2024-03-10 00:53:34,185:INFO:   <<< resume_model: None
+2024-03-10 00:53:34,185:INFO:   <<< sampled_use_mil: False
+2024-03-10 00:53:34,185:INFO:   <<< seed: 42
+2024-03-10 00:53:34,185:INFO:   <<< sim_header: meanP
+2024-03-10 00:53:34,185:INFO:   <<< slice_framepos: 2
+2024-03-10 00:53:34,185:INFO:   <<< task_type: retrieval
+2024-03-10 00:53:34,185:INFO:   <<< text_num_hidden_layers: 12
+2024-03-10 00:53:34,185:INFO:   <<< train_csv: data/MSR-VTT/anns/MSRVTT_train.9k.csv
+2024-03-10 00:53:34,185:INFO:   <<< train_frame_order: 0
+2024-03-10 00:53:34,185:INFO:   <<< use_mil: False
+2024-03-10 00:53:34,185:INFO:   <<< val_csv: data/MSR-VTT/anns/MSRVTT_JSFUSION_test.csv
+2024-03-10 00:53:34,185:INFO:   <<< video_dim: 1024
+2024-03-10 00:53:34,185:INFO:   <<< visual_num_hidden_layers: 12
+2024-03-10 00:53:34,185:INFO:   <<< warmup_proportion: 0.1
+2024-03-10 00:53:34,185:INFO:   <<< world_size: 1
+2024-03-10 00:53:34,185:INFO:   <<< wti_arch: 0
+2024-03-10 00:53:34,185:INFO: device: cuda:0 n_gpu: 1
+2024-03-10 00:53:36,018:INFO: loading archive file /home/totuanan/Workplace/AICityChallenge2024_Track2/internvid/modules/cross-base
+2024-03-10 00:53:36,018:INFO: Model config {
+  "attention_probs_dropout_prob": 0.1,
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 512,
+  "initializer_range": 0.02,
+  "intermediate_size": 2048,
+  "max_position_embeddings": 128,
+  "num_attention_heads": 8,
+  "num_hidden_layers": 4,
+  "type_vocab_size": 2,
+  "vocab_size": 512
+}
+
+2024-03-10 00:53:36,018:INFO: Weight doesn't exsits. /home/totuanan/Workplace/AICityChallenge2024_Track2/internvid/modules/cross-base/cross_pytorch_model.bin
+2024-03-10 00:53:36,018:WARNING: Stage-One:True, Stage-Two:False
+2024-03-10 00:53:36,018:WARNING: Test retrieval by loose type.
+2024-03-10 00:53:36,019:WARNING: 	 embed_dim: 768
+2024-03-10 00:53:36,019:WARNING: 	 image_resolution: 224
+2024-03-10 00:53:36,019:WARNING: 	 vision_layers: 24
+2024-03-10 00:53:36,019:WARNING: 	 vision_width: 1024
+2024-03-10 00:53:36,019:WARNING: 	 vision_patch_size: 14
+2024-03-10 00:53:36,019:WARNING: 	 context_length: 77
+2024-03-10 00:53:36,019:WARNING: 	 vocab_size: 49408
+2024-03-10 00:53:36,019:WARNING: 	 transformer_width: 768
+2024-03-10 00:53:36,019:WARNING: 	 transformer_heads: 12
+2024-03-10 00:53:36,019:WARNING: 	 transformer_layers: 12
+2024-03-10 00:53:36,019:WARNING: 		 linear_patch: 2d
+2024-03-10 00:53:36,019:WARNING: 	 cut_top_layer: 0
+2024-03-10 00:53:38,091:INFO: Drop path rate: 0.0
+2024-03-10 00:53:38,134:INFO: Drop path rate: 0.0
+2024-03-10 00:53:38,177:INFO: Drop path rate: 0.0
+2024-03-10 00:53:38,219:INFO: Drop path rate: 0.0
+2024-03-10 00:53:38,263:INFO: Drop path rate: 0.0
+2024-03-10 00:53:38,306:INFO: Drop path rate: 0.0
+2024-03-10 00:53:38,350:INFO: Drop path rate: 0.0
+2024-03-10 00:53:38,394:INFO: Drop path rate: 0.0
+2024-03-10 00:53:38,437:INFO: Drop path rate: 0.0
+2024-03-10 00:53:38,480:INFO: Drop path rate: 0.0
+2024-03-10 00:53:38,523:INFO: Drop path rate: 0.0
+2024-03-10 00:53:38,566:INFO: Drop path rate: 0.0
+2024-03-10 00:53:38,613:INFO: Drop path rate: 0.0
+2024-03-10 00:53:38,666:INFO: Drop path rate: 0.0
+2024-03-10 00:53:38,718:INFO: Drop path rate: 0.0
+2024-03-10 00:53:38,766:INFO: Drop path rate: 0.0
+2024-03-10 00:53:38,820:INFO: Drop path rate: 0.0
+2024-03-10 00:53:38,872:INFO: Drop path rate: 0.0
+2024-03-10 00:53:38,923:INFO: Drop path rate: 0.0
+2024-03-10 00:53:38,971:INFO: Drop path rate: 0.0
+2024-03-10 00:53:39,018:INFO: Drop path rate: 0.0
+2024-03-10 00:53:39,062:INFO: Drop path rate: 0.0
+2024-03-10 00:53:39,105:INFO: Drop path rate: 0.0
+2024-03-10 00:53:39,147:INFO: Drop path rate: 0.0
+2024-03-10 00:53:39,189:INFO: Use checkpoint: True
+2024-03-10 00:53:39,190:INFO: Checkpoint number: [24, 100]
+2024-03-10 00:53:39,190:INFO: Drop path rate: 0.0
+2024-03-10 00:53:39,252:INFO: Drop path rate: 0.0
+2024-03-10 00:53:39,316:INFO: Drop path rate: 0.0
+2024-03-10 00:53:39,378:INFO: Drop path rate: 0.0
+2024-03-10 00:53:40,427:WARNING: 	 sim_header: meanP
+2024-03-10 00:53:40,460:INFO: ***** Running test *****
+2024-03-10 00:53:40,460:INFO:   Num examples = 1243
+2024-03-10 00:53:40,460:INFO:   Batch size = 1
+2024-03-10 00:53:40,460:INFO:   Num steps = 1243
+2024-03-10 00:53:40,460:INFO: ***** Running val *****
+2024-03-10 00:53:40,460:INFO:   Num examples = 1243
+2024-03-10 00:53:40,611:INFO: ***** Running training *****
+2024-03-10 00:53:40,611:INFO:   Num examples = 4212
+2024-03-10 00:53:40,611:INFO:   Batch size = 1
+2024-03-10 00:53:40,611:INFO:   Num steps = 4212
+2024-03-10 00:58:57,885:INFO: Effective parameters:
+2024-03-10 00:58:57,886:INFO:   <<< batch_size: 1
+2024-03-10 00:58:57,886:INFO:   <<< batch_size_val: 1
+2024-03-10 00:58:57,886:INFO:   <<< cache_dir: 
+2024-03-10 00:58:57,886:INFO:   <<< cdcr: 0
+2024-03-10 00:58:57,886:INFO:   <<< clip_evl: True
+2024-03-10 00:58:57,886:INFO:   <<< coef_lr: 0.002
+2024-03-10 00:58:57,886:INFO:   <<< cross_model: cross-base
+2024-03-10 00:58:57,886:INFO:   <<< cross_num_hidden_layers: 4
+2024-03-10 00:58:57,886:INFO:   <<< data_path: ./data/ActivityNet/
+2024-03-10 00:58:57,886:INFO:   <<< datatype: activity
+2024-03-10 00:58:57,886:INFO:   <<< do_eval: False
+2024-03-10 00:58:57,886:INFO:   <<< do_lower_case: False
+2024-03-10 00:58:57,886:INFO:   <<< do_pretrain: False
+2024-03-10 00:58:57,886:INFO:   <<< do_train: True
+2024-03-10 00:58:57,886:INFO:   <<< epochs: 1
+2024-03-10 00:58:57,886:INFO:   <<< eval_frame_order: 0
+2024-03-10 00:58:57,886:INFO:   <<< expand_msrvtt_sentences: True
+2024-03-10 00:58:57,886:INFO:   <<< feature_framerate: 1
+2024-03-10 00:58:57,886:INFO:   <<< features_path: /home/totuanan/Workplace/AICityChallenge2024_Track2/feat_extractor/data/retrieval/videos
+2024-03-10 00:58:57,886:INFO:   <<< fp16: False
+2024-03-10 00:58:57,886:INFO:   <<< fp16_opt_level: O1
+2024-03-10 00:58:57,886:INFO:   <<< freeze_layer_num: 0
+2024-03-10 00:58:57,886:INFO:   <<< gpu: 0
+2024-03-10 00:58:57,886:INFO:   <<< gradient_accumulation_steps: 1
+2024-03-10 00:58:57,886:INFO:   <<< hard_negative_rate: 0.5
+2024-03-10 00:58:57,886:INFO:   <<< init_model: None
+2024-03-10 00:58:57,886:INFO:   <<< interaction: no
+2024-03-10 00:58:57,886:INFO:   <<< linear_patch: 2d
+2024-03-10 00:58:57,886:INFO:   <<< local_rank: 0
+2024-03-10 00:58:57,886:INFO:   <<< loose_type: True
+2024-03-10 00:58:57,886:INFO:   <<< lr: 0.001
+2024-03-10 00:58:57,886:INFO:   <<< lr_decay: 0.9
+2024-03-10 00:58:57,886:INFO:   <<< margin: 0.1
+2024-03-10 00:58:57,886:INFO:   <<< max_frames: 64
+2024-03-10 00:58:57,886:INFO:   <<< max_words: 77
+2024-03-10 00:58:57,886:INFO:   <<< mergeclip: False
+2024-03-10 00:58:57,886:INFO:   <<< mergeweight: 0.5
+2024-03-10 00:58:57,886:INFO:   <<< n_display: 50
+2024-03-10 00:58:57,886:INFO:   <<< n_gpu: 1
+2024-03-10 00:58:57,886:INFO:   <<< n_pair: 1
+2024-03-10 00:58:57,886:INFO:   <<< negative_weighting: 1
+2024-03-10 00:58:57,886:INFO:   <<< num_thread_reader: 1
+2024-03-10 00:58:57,886:INFO:   <<< output_dir: vidintern_output
+2024-03-10 00:58:57,886:INFO:   <<< pretrained_clip_name: ViT-L/14
+2024-03-10 00:58:57,886:INFO:   <<< pretrained_path: ViT-L/14
+2024-03-10 00:58:57,886:INFO:   <<< rank: 0
+2024-03-10 00:58:57,886:INFO:   <<< resume_model: None
+2024-03-10 00:58:57,886:INFO:   <<< sampled_use_mil: False
+2024-03-10 00:58:57,886:INFO:   <<< seed: 42
+2024-03-10 00:58:57,886:INFO:   <<< sim_header: meanP
+2024-03-10 00:58:57,886:INFO:   <<< slice_framepos: 2
+2024-03-10 00:58:57,886:INFO:   <<< task_type: retrieval
+2024-03-10 00:58:57,886:INFO:   <<< text_num_hidden_layers: 12
+2024-03-10 00:58:57,886:INFO:   <<< train_csv: data/MSR-VTT/anns/MSRVTT_train.9k.csv
+2024-03-10 00:58:57,886:INFO:   <<< train_frame_order: 0
+2024-03-10 00:58:57,886:INFO:   <<< use_mil: False
+2024-03-10 00:58:57,886:INFO:   <<< val_csv: data/MSR-VTT/anns/MSRVTT_JSFUSION_test.csv
+2024-03-10 00:58:57,886:INFO:   <<< video_dim: 1024
+2024-03-10 00:58:57,886:INFO:   <<< visual_num_hidden_layers: 12
+2024-03-10 00:58:57,886:INFO:   <<< warmup_proportion: 0.1
+2024-03-10 00:58:57,886:INFO:   <<< world_size: 1
+2024-03-10 00:58:57,886:INFO:   <<< wti_arch: 0
+2024-03-10 00:58:57,886:INFO: device: cuda:0 n_gpu: 1
+2024-03-10 00:58:59,221:INFO: loading archive file /home/totuanan/Workplace/AICityChallenge2024_Track2/internvid/modules/cross-base
+2024-03-10 00:58:59,222:INFO: Model config {
+  "attention_probs_dropout_prob": 0.1,
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 512,
+  "initializer_range": 0.02,
+  "intermediate_size": 2048,
+  "max_position_embeddings": 128,
+  "num_attention_heads": 8,
+  "num_hidden_layers": 4,
+  "type_vocab_size": 2,
+  "vocab_size": 512
+}
+
+2024-03-10 00:58:59,222:INFO: Weight doesn't exsits. /home/totuanan/Workplace/AICityChallenge2024_Track2/internvid/modules/cross-base/cross_pytorch_model.bin
+2024-03-10 00:58:59,222:WARNING: Stage-One:True, Stage-Two:False
+2024-03-10 00:58:59,222:WARNING: Test retrieval by loose type.
+2024-03-10 00:58:59,222:WARNING: 	 embed_dim: 768
+2024-03-10 00:58:59,222:WARNING: 	 image_resolution: 224
+2024-03-10 00:58:59,222:WARNING: 	 vision_layers: 24
+2024-03-10 00:58:59,222:WARNING: 	 vision_width: 1024
+2024-03-10 00:58:59,222:WARNING: 	 vision_patch_size: 14
+2024-03-10 00:58:59,222:WARNING: 	 context_length: 77
+2024-03-10 00:58:59,222:WARNING: 	 vocab_size: 49408
+2024-03-10 00:58:59,222:WARNING: 	 transformer_width: 768
+2024-03-10 00:58:59,222:WARNING: 	 transformer_heads: 12
+2024-03-10 00:58:59,222:WARNING: 	 transformer_layers: 12
+2024-03-10 00:58:59,222:WARNING: 		 linear_patch: 2d
+2024-03-10 00:58:59,222:WARNING: 	 cut_top_layer: 0
+2024-03-10 00:59:01,061:INFO: Drop path rate: 0.0
+2024-03-10 00:59:01,104:INFO: Drop path rate: 0.0
+2024-03-10 00:59:01,146:INFO: Drop path rate: 0.0
+2024-03-10 00:59:01,188:INFO: Drop path rate: 0.0
+2024-03-10 00:59:01,229:INFO: Drop path rate: 0.0
+2024-03-10 00:59:01,271:INFO: Drop path rate: 0.0
+2024-03-10 00:59:01,312:INFO: Drop path rate: 0.0
+2024-03-10 00:59:01,354:INFO: Drop path rate: 0.0
+2024-03-10 00:59:01,396:INFO: Drop path rate: 0.0
+2024-03-10 00:59:01,438:INFO: Drop path rate: 0.0
+2024-03-10 00:59:01,479:INFO: Drop path rate: 0.0
+2024-03-10 00:59:01,520:INFO: Drop path rate: 0.0
+2024-03-10 00:59:01,561:INFO: Drop path rate: 0.0
+2024-03-10 00:59:01,603:INFO: Drop path rate: 0.0
+2024-03-10 00:59:01,644:INFO: Drop path rate: 0.0
+2024-03-10 00:59:01,685:INFO: Drop path rate: 0.0
+2024-03-10 00:59:01,727:INFO: Drop path rate: 0.0
+2024-03-10 00:59:01,768:INFO: Drop path rate: 0.0
+2024-03-10 00:59:01,810:INFO: Drop path rate: 0.0
+2024-03-10 00:59:01,852:INFO: Drop path rate: 0.0
+2024-03-10 00:59:01,893:INFO: Drop path rate: 0.0
+2024-03-10 00:59:01,935:INFO: Drop path rate: 0.0
+2024-03-10 00:59:01,976:INFO: Drop path rate: 0.0
+2024-03-10 00:59:02,018:INFO: Drop path rate: 0.0
+2024-03-10 00:59:02,059:INFO: Use checkpoint: True
+2024-03-10 00:59:02,059:INFO: Checkpoint number: [24, 100]
+2024-03-10 00:59:02,060:INFO: Drop path rate: 0.0
+2024-03-10 00:59:02,123:INFO: Drop path rate: 0.0
+2024-03-10 00:59:02,183:INFO: Drop path rate: 0.0
+2024-03-10 00:59:02,245:INFO: Drop path rate: 0.0
+2024-03-10 00:59:03,292:WARNING: 	 sim_header: meanP
+2024-03-10 00:59:03,325:INFO: ***** Running test *****
+2024-03-10 00:59:03,325:INFO:   Num examples = 1243
+2024-03-10 00:59:03,325:INFO:   Batch size = 1
+2024-03-10 00:59:03,325:INFO:   Num steps = 1243
+2024-03-10 00:59:03,325:INFO: ***** Running val *****
+2024-03-10 00:59:03,325:INFO:   Num examples = 1243
+2024-03-10 00:59:03,470:INFO: ***** Running training *****
+2024-03-10 00:59:03,470:INFO:   Num examples = 4212
+2024-03-10 00:59:03,470:INFO:   Batch size = 1
+2024-03-10 00:59:03,470:INFO:   Num steps = 4212
+2024-03-10 01:00:42,241:INFO: Effective parameters:
+2024-03-10 01:00:42,241:INFO:   <<< batch_size: 1
+2024-03-10 01:00:42,241:INFO:   <<< batch_size_val: 1
+2024-03-10 01:00:42,241:INFO:   <<< cache_dir: 
+2024-03-10 01:00:42,241:INFO:   <<< cdcr: 0
+2024-03-10 01:00:42,242:INFO:   <<< clip_evl: True
+2024-03-10 01:00:42,242:INFO:   <<< coef_lr: 0.002
+2024-03-10 01:00:42,242:INFO:   <<< cross_model: cross-base
+2024-03-10 01:00:42,242:INFO:   <<< cross_num_hidden_layers: 4
+2024-03-10 01:00:42,242:INFO:   <<< data_path: ./data/ActivityNet/
+2024-03-10 01:00:42,242:INFO:   <<< datatype: activity
+2024-03-10 01:00:42,242:INFO:   <<< do_eval: False
+2024-03-10 01:00:42,242:INFO:   <<< do_lower_case: False
+2024-03-10 01:00:42,242:INFO:   <<< do_pretrain: False
+2024-03-10 01:00:42,242:INFO:   <<< do_train: True
+2024-03-10 01:00:42,242:INFO:   <<< epochs: 1
+2024-03-10 01:00:42,242:INFO:   <<< eval_frame_order: 0
+2024-03-10 01:00:42,242:INFO:   <<< expand_msrvtt_sentences: True
+2024-03-10 01:00:42,242:INFO:   <<< feature_framerate: 1
+2024-03-10 01:00:42,242:INFO:   <<< features_path: /home/totuanan/Workplace/AICityChallenge2024_Track2/feat_extractor/data/retrieval/videos
+2024-03-10 01:00:42,242:INFO:   <<< fp16: False
+2024-03-10 01:00:42,242:INFO:   <<< fp16_opt_level: O1
+2024-03-10 01:00:42,242:INFO:   <<< freeze_layer_num: 0
+2024-03-10 01:00:42,242:INFO:   <<< gpu: 0
+2024-03-10 01:00:42,242:INFO:   <<< gradient_accumulation_steps: 1
+2024-03-10 01:00:42,242:INFO:   <<< hard_negative_rate: 0.5
+2024-03-10 01:00:42,242:INFO:   <<< init_model: None
+2024-03-10 01:00:42,242:INFO:   <<< interaction: no
+2024-03-10 01:00:42,242:INFO:   <<< linear_patch: 2d
+2024-03-10 01:00:42,242:INFO:   <<< local_rank: 0
+2024-03-10 01:00:42,242:INFO:   <<< loose_type: True
+2024-03-10 01:00:42,242:INFO:   <<< lr: 0.001
+2024-03-10 01:00:42,242:INFO:   <<< lr_decay: 0.9
+2024-03-10 01:00:42,242:INFO:   <<< margin: 0.1
+2024-03-10 01:00:42,242:INFO:   <<< max_frames: 64
+2024-03-10 01:00:42,242:INFO:   <<< max_words: 77
+2024-03-10 01:00:42,242:INFO:   <<< mergeclip: False
+2024-03-10 01:00:42,242:INFO:   <<< mergeweight: 0.5
+2024-03-10 01:00:42,242:INFO:   <<< n_display: 50
+2024-03-10 01:00:42,242:INFO:   <<< n_gpu: 1
+2024-03-10 01:00:42,242:INFO:   <<< n_pair: 1
+2024-03-10 01:00:42,242:INFO:   <<< negative_weighting: 1
+2024-03-10 01:00:42,242:INFO:   <<< num_thread_reader: 1
+2024-03-10 01:00:42,242:INFO:   <<< output_dir: vidintern_output
+2024-03-10 01:00:42,242:INFO:   <<< pretrained_clip_name: ViT-L/14
+2024-03-10 01:00:42,242:INFO:   <<< pretrained_path: ViT-L/14
+2024-03-10 01:00:42,242:INFO:   <<< rank: 0
+2024-03-10 01:00:42,242:INFO:   <<< resume_model: None
+2024-03-10 01:00:42,242:INFO:   <<< sampled_use_mil: False
+2024-03-10 01:00:42,242:INFO:   <<< seed: 42
+2024-03-10 01:00:42,242:INFO:   <<< sim_header: meanP
+2024-03-10 01:00:42,242:INFO:   <<< slice_framepos: 2
+2024-03-10 01:00:42,242:INFO:   <<< task_type: retrieval
+2024-03-10 01:00:42,242:INFO:   <<< text_num_hidden_layers: 12
+2024-03-10 01:00:42,242:INFO:   <<< train_csv: data/MSR-VTT/anns/MSRVTT_train.9k.csv
+2024-03-10 01:00:42,242:INFO:   <<< train_frame_order: 0
+2024-03-10 01:00:42,242:INFO:   <<< use_mil: False
+2024-03-10 01:00:42,242:INFO:   <<< val_csv: data/MSR-VTT/anns/MSRVTT_JSFUSION_test.csv
+2024-03-10 01:00:42,242:INFO:   <<< video_dim: 1024
+2024-03-10 01:00:42,242:INFO:   <<< visual_num_hidden_layers: 12
+2024-03-10 01:00:42,242:INFO:   <<< warmup_proportion: 0.1
+2024-03-10 01:00:42,242:INFO:   <<< world_size: 1
+2024-03-10 01:00:42,242:INFO:   <<< wti_arch: 0
+2024-03-10 01:00:42,242:INFO: device: cuda:0 n_gpu: 1
+2024-03-10 01:00:43,569:INFO: loading archive file /home/totuanan/Workplace/AICityChallenge2024_Track2/internvid/modules/cross-base
+2024-03-10 01:00:43,569:INFO: Model config {
+  "attention_probs_dropout_prob": 0.1,
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 512,
+  "initializer_range": 0.02,
+  "intermediate_size": 2048,
+  "max_position_embeddings": 128,
+  "num_attention_heads": 8,
+  "num_hidden_layers": 4,
+  "type_vocab_size": 2,
+  "vocab_size": 512
+}
+
+2024-03-10 01:00:43,569:INFO: Weight doesn't exsits. /home/totuanan/Workplace/AICityChallenge2024_Track2/internvid/modules/cross-base/cross_pytorch_model.bin
+2024-03-10 01:00:43,569:WARNING: Stage-One:True, Stage-Two:False
+2024-03-10 01:00:43,569:WARNING: Test retrieval by loose type.
+2024-03-10 01:00:43,570:WARNING: 	 embed_dim: 768
+2024-03-10 01:00:43,570:WARNING: 	 image_resolution: 224
+2024-03-10 01:00:43,570:WARNING: 	 vision_layers: 24
+2024-03-10 01:00:43,570:WARNING: 	 vision_width: 1024
+2024-03-10 01:00:43,570:WARNING: 	 vision_patch_size: 14
+2024-03-10 01:00:43,570:WARNING: 	 context_length: 77
+2024-03-10 01:00:43,570:WARNING: 	 vocab_size: 49408
+2024-03-10 01:00:43,570:WARNING: 	 transformer_width: 768
+2024-03-10 01:00:43,570:WARNING: 	 transformer_heads: 12
+2024-03-10 01:00:43,570:WARNING: 	 transformer_layers: 12
+2024-03-10 01:00:43,570:WARNING: 		 linear_patch: 2d
+2024-03-10 01:00:43,570:WARNING: 	 cut_top_layer: 0
+2024-03-10 01:00:45,404:INFO: Drop path rate: 0.0
+2024-03-10 01:00:45,446:INFO: Drop path rate: 0.0
+2024-03-10 01:00:45,489:INFO: Drop path rate: 0.0
+2024-03-10 01:00:45,532:INFO: Drop path rate: 0.0
+2024-03-10 01:00:45,574:INFO: Drop path rate: 0.0
+2024-03-10 01:00:45,618:INFO: Drop path rate: 0.0
+2024-03-10 01:00:45,661:INFO: Drop path rate: 0.0
+2024-03-10 01:00:45,704:INFO: Drop path rate: 0.0
+2024-03-10 01:00:45,747:INFO: Drop path rate: 0.0
+2024-03-10 01:00:45,789:INFO: Drop path rate: 0.0
+2024-03-10 01:00:45,831:INFO: Drop path rate: 0.0
+2024-03-10 01:00:45,873:INFO: Drop path rate: 0.0
+2024-03-10 01:00:45,915:INFO: Drop path rate: 0.0
+2024-03-10 01:00:45,956:INFO: Drop path rate: 0.0
+2024-03-10 01:00:45,998:INFO: Drop path rate: 0.0
+2024-03-10 01:00:46,039:INFO: Drop path rate: 0.0
+2024-03-10 01:00:46,082:INFO: Drop path rate: 0.0
+2024-03-10 01:00:46,124:INFO: Drop path rate: 0.0
+2024-03-10 01:00:46,166:INFO: Drop path rate: 0.0
+2024-03-10 01:00:46,208:INFO: Drop path rate: 0.0
+2024-03-10 01:00:46,251:INFO: Drop path rate: 0.0
+2024-03-10 01:00:46,295:INFO: Drop path rate: 0.0
+2024-03-10 01:00:46,336:INFO: Drop path rate: 0.0
+2024-03-10 01:00:46,378:INFO: Drop path rate: 0.0
+2024-03-10 01:00:46,419:INFO: Use checkpoint: True
+2024-03-10 01:00:46,419:INFO: Checkpoint number: [24, 100]
+2024-03-10 01:00:46,420:INFO: Drop path rate: 0.0
+2024-03-10 01:00:46,482:INFO: Drop path rate: 0.0
+2024-03-10 01:00:46,543:INFO: Drop path rate: 0.0
+2024-03-10 01:00:46,604:INFO: Drop path rate: 0.0
+2024-03-10 01:00:47,642:WARNING: 	 sim_header: meanP
+2024-03-10 01:00:47,673:INFO: ***** Running test *****
+2024-03-10 01:00:47,673:INFO:   Num examples = 1243
+2024-03-10 01:00:47,673:INFO:   Batch size = 1
+2024-03-10 01:00:47,673:INFO:   Num steps = 1243
+2024-03-10 01:00:47,673:INFO: ***** Running val *****
+2024-03-10 01:00:47,673:INFO:   Num examples = 1243
+2024-03-10 01:00:47,817:INFO: ***** Running training *****
+2024-03-10 01:00:47,817:INFO:   Num examples = 4212
+2024-03-10 01:00:47,817:INFO:   Batch size = 1
+2024-03-10 01:00:47,817:INFO:   Num steps = 4212
