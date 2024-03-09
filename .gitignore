@@ -16,3 +16,4 @@ cache*
 *.pickle
 *.pth
 *.pt
+log.txt

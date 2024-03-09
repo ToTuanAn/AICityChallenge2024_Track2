@@ -39,6 +39,7 @@ class PretrainedConfig(object):
 
     @classmethod
     def get_config(cls, pretrained_model_name, cache_dir, type_vocab_size, state_dict, task_config=None):
+        print("haha")
         archive_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), pretrained_model_name)
         if os.path.exists(archive_file) is False:
             if pretrained_model_name in cls.pretrained_model_archive_map:
