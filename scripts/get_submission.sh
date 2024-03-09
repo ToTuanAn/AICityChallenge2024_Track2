@@ -10,7 +10,7 @@ python -m torch.distributed.launch --nproc_per_node 1 \
                                     --use_env \
                                     infer.py \
                                     --combine_datasets wts \
-                                    --model_name t5-large \
+                                    --model_name google-t5/t5-large \
                                     --batch_size_val 1 \
                                     --max_input_tokens 256 \
                                     --max_output_tokens 256 \
@@ -29,7 +29,7 @@ python -m torch.distributed.launch --nproc_per_node 1 \
                                     --use_env \
                                     infer.py \
                                     --combine_datasets wts \
-                                    --model_name t5-large \
+                                    --model_name google-t5/t5-large \
                                     --batch_size_val 1 \
                                     --max_input_tokens 256 \
                                     --max_output_tokens 256 \
