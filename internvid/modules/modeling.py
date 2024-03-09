@@ -256,8 +256,8 @@ class CLIP4Clip(CLIP4ClipPreTrainedModel):
         self.cdcr = task_config.cdcr if hasattr(task_config, 'cdcr') else 0
             
         if hasattr(task_config, "clip_evl") and task_config.clip_evl == True:
-            self.clip, _ = clip_evl.load(task_config.pretrained_path, t_size=task_config.max_frames, mergeclip=task_config.mergeclip, mergeweight=task_config.mergeweight, clip_state_dict=clip_state_dict)
-            self.clip = self.clip.float()         
+            self.clip, _ = clip_evl.load(task_config.pretrained_path, t_size=task_config.max_frames, mergeclip=task_config.mergeclip, mergeweight=task_config.mergeweight, clip_state_dict=clip_state_dict).float()    
+            # self.clip = self.clip     
             self.clip_evl = True
             
         else:
