@@ -64,6 +64,10 @@ class CLIP4ClipPreTrainedModel(PreTrainedModel, nn.Module):
             if new_key not in state_dict:
                 state_dict[new_key] = val.clone()
 
+        print(cross_model_name)
+        print(cache_dir)
+        print(type_vocab_size)
+        print(task_config)
         cross_config, _ = CrossConfig.get_config(cross_model_name, cache_dir, type_vocab_size, state_dict=None, task_config=task_config)
 
         model = cls(cross_config, clip_state_dict, *inputs, **kwargs)
