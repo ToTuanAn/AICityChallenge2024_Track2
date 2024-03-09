@@ -250,9 +250,9 @@ class CLIP4Clip(CLIP4ClipPreTrainedModel):
         if hasattr(task_config, "clip_evl") and task_config.clip_evl == True:
             ckpt_path = '/mnt/cache/share_data/liyizhuo.vendor/projects/all-in-one/outputs/outputs_k400/models/clip_evl_contrastive_mlm_webvid_howto_k400_lr1e5/last.ckpt'
            # ckpt_path = '/mnt/cache/share_data/liyizhuo.vendor/projects/all-in-one/outputs/outputs_k400/models/clip_evl_contrastive_webvid_howto_k400_lr1e5/last.ckpt'
-            self.clip, _ = clip_evl.load(ckpt_path, t_size=8)
+            self.clip, _ = clip_evl.load(ckpt_path, t_size=8).float()
             #set_trace()
-            self.clip = self.clip.float()
+            # self.clip = self.clip
             self.clip_evl = True
             #set_trace()
         elif hasattr(task_config, "clip_kc") and task_config.clip_kc == True:
@@ -319,19 +319,19 @@ class CLIP4Clip(CLIP4ClipPreTrainedModel):
                 self.video_weight_fc = nn.Linear(transformer_width, 1)
             elif self.config.wti_arch == 2:
                 self.text_weight_fc = nn.Sequential(
-                    nn.Linear(transformer_width, transformer_width), nn.ReLU(inplace=False),
+                    nn.Linear(transformer_width, transformer_width), nn.ReLU(inplace=True),
                     nn.Linear(transformer_width, 1))
                 self.video_weight_fc = nn.Sequential(
-                    nn.Linear(transformer_width, transformer_width), nn.ReLU(inplace=False),
+                    nn.Linear(transformer_width, transformer_width), nn.ReLU(inplace=True),
                     nn.Linear(transformer_width, 1))
             elif self.config.wti_arch == 3:
                 self.text_weight_fc = nn.Sequential(
-                    nn.Linear(transformer_width, transformer_width), nn.ReLU(inplace=False),
-                    nn.Linear(transformer_width, transformer_width), nn.ReLU(inplace=False),
+                    nn.Linear(transformer_width, transformer_width), nn.ReLU(inplace=True),
+                    nn.Linear(transformer_width, transformer_width), nn.ReLU(inplace=True),
                     nn.Linear(transformer_width, 1))
                 self.video_weight_fc = nn.Sequential(
-                    nn.Linear(transformer_width, transformer_width), nn.ReLU(inplace=False),
-                    nn.Linear(transformer_width, transformer_width), nn.ReLU(inplace=False),
+                    nn.Linear(transformer_width, transformer_width), nn.ReLU(inplace=True),
+                    nn.Linear(transformer_width, transformer_width), nn.ReLU(inplace=True),
                     nn.Linear(transformer_width, 1))
 
 

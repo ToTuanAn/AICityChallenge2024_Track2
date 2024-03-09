@@ -315,19 +315,19 @@ class CLIP4Clip(CLIP4ClipPreTrainedModel):
             
             elif self.wti_arch == 2:
                 self.text_weight_fc = nn.Sequential(
-                    nn.Linear(transformer_width, transformer_width), nn.ReLU(inplace=False),
+                    nn.Linear(transformer_width, transformer_width), nn.ReLU(inplace=True),
                     nn.Linear(transformer_width, 1))
                 self.video_weight_fc = nn.Sequential(
-                    nn.Linear(transformer_width, transformer_width), nn.ReLU(inplace=False),
+                    nn.Linear(transformer_width, transformer_width), nn.ReLU(inplace=True),
                     nn.Linear(transformer_width, 1))
             elif self.wti_arch == 3:
                 self.text_weight_fc = nn.Sequential(
-                    nn.Linear(transformer_width, transformer_width), nn.ReLU(inplace=False),
-                    nn.Linear(transformer_width, transformer_width), nn.ReLU(inplace=False),
+                    nn.Linear(transformer_width, transformer_width), nn.ReLU(inplace=True),
+                    nn.Linear(transformer_width, transformer_width), nn.ReLU(inplace=True),
                     nn.Linear(transformer_width, 1))
                 self.video_weight_fc = nn.Sequential(
-                    nn.Linear(transformer_width, transformer_width), nn.ReLU(inplace=False),
-                    nn.Linear(transformer_width, transformer_width), nn.ReLU(inplace=False),
+                    nn.Linear(transformer_width, transformer_width), nn.ReLU(inplace=True),
+                    nn.Linear(transformer_width, transformer_width), nn.ReLU(inplace=True),
                     nn.Linear(transformer_width, 1))
 
 
