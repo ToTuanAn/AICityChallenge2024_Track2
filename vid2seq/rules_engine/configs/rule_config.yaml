@@ -7,4 +7,5 @@ vehicle:
     params:
       video_images_folder: "data/vehicle_external_data/IMAGES"
       color_intensity_threshold: 60
+  
 
