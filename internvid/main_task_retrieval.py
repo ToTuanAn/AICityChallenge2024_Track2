@@ -672,7 +672,7 @@ def main():
         resumed_epoch = 0
         if args.resume_model:
             checkpoint = torch.load(args.resume_model, map_location='cpu')
-            optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+            optimizer.load_state_dict(args.resume_optimizer)
             resumed_epoch = checkpoint['epoch']+1
             resumed_loss = checkpoint['loss']
         print('begin training!!!!!!!!')
