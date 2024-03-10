@@ -16,3 +16,4 @@ cache*
 *.pth
 *.pt
 log.txt
+output/

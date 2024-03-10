@@ -122,6 +122,7 @@ def get_args(description='CLIP4Clip on Retrieval Task'):
     parser.add_argument("--cdcr", type=int, default=0, help="which cdcr type, refer to DRL")
 
     parser.add_argument("--is_pedestrian", type=bool, default=True, help="pedestrian or vehicle")
+    parser.add_argument("--resume_optimizer", type=str, default="", help="optimizer checkpoint")
     
     args = parser.parse_args()
 

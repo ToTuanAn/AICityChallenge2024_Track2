@@ -17,5 +17,5 @@ def test(rule_config_path, rule_mode, preds_file):
 if __name__ == '__main__':
     config_path = "rules_engine/configs/rule_config.yaml"
     rule_mode = "vehicle"
-    preds_file = "data/label.json"
+    preds_file = "output/vehicle.json"
     test(config_path, rule_mode, preds_file)
