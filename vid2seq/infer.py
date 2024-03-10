@@ -101,8 +101,6 @@ def test_collate_fn(batch):
     }
     return out
 
-
-@torch.no_grad
 def infer(model,
           tokenizer,
           dataloader,
@@ -114,8 +112,10 @@ def infer(model,
     res = {}
 
     for i, batch_dict in enumerate(dataloader):
+        if i % 100 == 0:
+            print(f"Processing video {str(i)} / {str(len(dataloader))}") 
         # batch_size_val must be 1
-        print(f"Processing video {str(i)} / {str(len(dataloader))}") 
+        # print(f"Processing video {str(i)} / {str(len(dataloader))}") 
         input_text = batch_dict['input_text'][0]
         input_tokenized = tokenizer(input_text,
                                     padding='longest',
@@ -198,8 +198,8 @@ def main(args):
     print("Rule config path: ", args.rule_config_path)
     print("Rule mode: ", args.rule_mode)
     
-    rule_executor = RulesExecutor(config_path=args.rule_config_path)
-    preds = rule_executor.run(preds, rule_mode=args.rule_mode)
+    # rule_executor = RulesExecutor(config_path=args.rule_config_path)
+    # preds = rule_executor.run(preds, rule_mode=args.rule_mode)
 
     print(f"Finished {args.rule_mode} rules")
 

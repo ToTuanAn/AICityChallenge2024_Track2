@@ -12,7 +12,6 @@ new_annotations/
 *wandb*
 *.
 cache*
-*.json
 *.pickle
 *.pth
 *.pt

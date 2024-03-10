@@ -120,6 +120,8 @@ def get_args(description='CLIP4Clip on Retrieval Task'):
     parser.add_argument("--interaction", type=str, default='no', help="interaction mode, refer to DRL")
     parser.add_argument("--wti_arch", type=int, default=0, help="wti architecture, refer to DRL")
     parser.add_argument("--cdcr", type=int, default=0, help="which cdcr type, refer to DRL")
+
+    parser.add_argument("--is_pedestrian", type=bool, default=True, help="pedestrian or vehicle")
     
     args = parser.parse_args()
 

@@ -258,8 +258,8 @@ class CLIP4Clip(CLIP4ClipPreTrainedModel):
         elif hasattr(task_config, "clip_kc") and task_config.clip_kc == True:
             # ckpt_path = '/mnt/lustre/share_data/liyizhuo/projects/all-in-one/outputs/outputs_msrvtt_choice/models/clip_kc_contrastive_mlm_webvid_howto_msrvtt_choice_lr5e6_bz256_cosine_step25k_sanity/epoch=0-step=359.ckpt'
             ckpt_path = '/mnt/lustre/share_data/liyizhuo.vendor/projects/all-in-one/outputs/outputs_msrvtt_choice/models/clip_kc_contrastive_webvid_howto_clip_lm_01_msrvtt_choice_lr5e6_bz1024_cosine_step100k_freeze_text_ced00/epoch=13-step=47028.ckpt'
-            self.clip, _  = clip_kc.load(ckpt_path)
-            self.clip = self.clip.float()
+            self.clip, _  = clip_kc.load(ckpt_path).float()
+            # self.clip = self.clip
             self.clip_evl = True ### also use temporal
             
         else:
