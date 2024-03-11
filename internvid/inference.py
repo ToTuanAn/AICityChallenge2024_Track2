@@ -598,10 +598,10 @@ def main():
     if DATALOADER_DICT[args.datatype]["test"] is not None:
         test_dataloader, test_length = DATALOADER_DICT[args.datatype]["test"](args, tokenizer)
 
-    if DATALOADER_DICT[args.datatype]["val"] is not None:
-        val_dataloader, val_length = DATALOADER_DICT[args.datatype]["val"](args, tokenizer, subset="val")
-    else:
-        val_dataloader, val_length = test_dataloader, test_length
+    # if DATALOADER_DICT[args.datatype]["val"] is not None:
+    #     val_dataloader, val_length = DATALOADER_DICT[args.datatype]["val"](args, tokenizer, subset="val")
+    # else:
+    #     val_dataloader, val_length = test_dataloader, test_length
 
     ## report validation results if the ["test"] is None
     if test_dataloader is None:
