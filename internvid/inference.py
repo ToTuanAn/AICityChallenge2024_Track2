@@ -471,6 +471,7 @@ def eval_epoch(args, model, test_dataloader, device, n_gpu):
 
                 batch_visual_output_list.append(visual_output)
                 batch_list_v.append((video_mask,))
+                print("Text: ", sequence_output)    
 
             print("{}/{}\r".format(bid, len(test_dataloader)), end="")
 
