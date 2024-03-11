@@ -130,6 +130,8 @@ def get_args(description='CLIP4Clip on Retrieval Task'):
     parser.add_argument("--use_capdecoder", type=bool, default=False, help="Choose a CLIP version")
     
     parser.add_argument("--finetuned_path", type=str, default=None, help="Choose a CLIP version")
+    parser.add_argument("--is_pedestrian", type=bool, default=True, help="pedestrian or vehicle")
+    parser.add_argument("--resume_optimizer", type=str, default="", help="optimizer checkpoint")
 
     args = parser.parse_args()
 
