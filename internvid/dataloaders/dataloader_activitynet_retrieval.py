@@ -57,24 +57,28 @@ class ActivityNet_DataLoader(Dataset):
         assert self.slice_framepos in [0, 1, 2]
 
         self.subset = subset
-        assert self.subset in ["train", "val"]
+        assert self.subset in ["train", "val", "test"]
 
         video_id_path_dict = {}
         if is_pedestrian:
             video_id_path_dict["train"] = os.path.join(self.data_path, "pedestrian_train_ids.json")
             video_id_path_dict["val"] = os.path.join(self.data_path, "pedestrian_val_ids.json")
+            video_id_path_dict["test"] = os.path.join(self.data_path, "pedestrian_test_ids.json")
         else:
             video_id_path_dict["train"] = os.path.join(self.data_path, "vehicle_train_ids.json")
             video_id_path_dict["val"] = os.path.join(self.data_path, "vehicle_val_ids.json")
+            video_id_path_dict["test"] = os.path.join(self.data_path, "vehicle_test_ids.json")
 
         video_json_path_dict = {}
 
         if is_pedestrian:
             video_json_path_dict["train"] = os.path.join(self.data_path, "pedestrian_train.json")
             video_json_path_dict["val"] = os.path.join(self.data_path, "pedestrian_val.json")
+            video_json_path_dict["test"] = os.path.join(self.data_path, "pedestrian_test.json")
         else:
             video_json_path_dict["train"] = os.path.join(self.data_path, "vehicle_train.json")
             video_json_path_dict["val"] = os.path.join(self.data_path, "vehicle_val.json")
+            video_json_path_dict["test"] = os.path.join(self.data_path, "vehicle_test.json")
 
         pseudo_video_id_list, video_id_list = self._get_video_id_single(video_id_path_dict[self.subset])
         pseudo_caption_dict = self._get_captions_single(video_json_path_dict[self.subset])
