@@ -607,15 +607,13 @@ def main():
 
     ## report validation results if the ["test"] is None
     if test_dataloader is None:
-        test_dataloader, test_length = val_dataloader, val_length
+        test_dataloader, test_length = test_dataloader, test_length
 
     if args.rank == 0:
         logger.info("***** Running test *****")
         logger.info("  Num examples = %d", test_length)
         logger.info("  Batch size = %d", args.batch_size_val)
         logger.info("  Num steps = %d", len(test_dataloader))
-        logger.info("***** Running val *****")
-        logger.info("  Num examples = %d", val_length)
 
     ## ####################################
     ### test ####
