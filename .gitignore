@@ -12,3 +12,8 @@ new_annotations/
 *wandb*
 *.
 cache*
+*.pickle
+*.pth
+*.pt
+log.txt
+output/

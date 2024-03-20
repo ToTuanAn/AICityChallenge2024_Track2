@@ -106,12 +106,8 @@ def test_collate_fn(batch):
     return out
 
 
-@torch.no_grad
-def infer_by_phases(model,
-          phase,
-          tokenizer,
-          dataloader,
-          device):
+# @torch.no_grad
+def infer_by_phases(model,phase,tokenizer,dataloader,device):
 
     model.to(device)
     model.eval()
@@ -120,7 +116,8 @@ def infer_by_phases(model,
 
     for i, batch_dict in enumerate(dataloader):
         # batch_size_val must be 1
-        print(f"Processing video {str(i)} / {str(len(dataloader))}") 
+        if i % 100 == 0:
+            print(f"Processing video {str(i)} / {str(len(dataloader))}") 
     
         phase_idx = -1
         phase_exist = False
@@ -141,9 +138,11 @@ def infer_by_phases(model,
 
         # print("Phase idx: ", phase_idx)
         # print("Len: ", len(batch_dict['video'][0]))
-        # print("Len of phases: ", len(batch_dict['video'][0][phase_idx]))
+        # print("Len of phases: ", len([batch_dict['video'][0][phase_idx]]))
 
-        video = torch.from_numpy(np.array([batch_dict['video'][0][phase_idx]]))
+        # print(batch_dict['video'][0].shape)
+        video = torch.unsqueeze(batch_dict['video'][0][phase_idx], 0)
+        # print(video.shape)
         # print("Len of video: ", len(video))
         video = video.to(device)
 
@@ -159,7 +158,7 @@ def infer_by_phases(model,
                                 num_captions=1,
                                 temperature=1)
 
-        video_id = batch_dict['video_id'][0][phase_idx]
+        video_id = batch_dict['video_id'][0]
         clip_ids = [video_id + "#" + str(phase)]
 
         for clip_id, pred in zip(clip_ids, output):
@@ -220,11 +219,7 @@ def main(args):
             checkpoint['model']['t5_model.lm_head.weight'] = checkpoint['model']['t5_model.lm_head.weight'][:32100]
         model.load_state_dict(checkpoint['model'], strict=False)
 
-        preds = infer_by_phases(model,
-                    phase,
-                    tokenizer,
-                    dataloader_test,
-                    device)
+        preds = infer_by_phases(model,phase,tokenizer,dataloader_test,device)
         
         if str(phase) == "0":
             with open(args.save_phase_0, 'w') as f:
