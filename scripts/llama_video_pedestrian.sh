@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH --nodes=1
-#SBATCH --time=01:00:00
+#SBATCH --time=72:00:00
 #SBATCH --ntasks=1
-#SBATCH --job-name=baseline_pedestrian
-#SBATCH --output=logs/baseline_pedestrian.out
-#SBATCH --error=logs/baseline_pedestrian.out
+#SBATCH --job-name=llama_video_pedestrian
+#SBATCH --output=logs/llama_video_pedestrian.out
+#SBATCH --error=logs/llama_video_pedestrian.out
 #SBATCH --gres=gpu:1
 #SBATCH --nodelist=gpu01
 #SBATCH --cpus-per-task=12
@@ -12,6 +12,8 @@
 
 export PYTHONWARNINGS="ignore"
 export TRANSFORMERS_CACHE=backbone
+
+huggingface-cli login --token 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
 
 cd ../vid2seq
 
@@ -22,17 +24,17 @@ python -m torch.distributed.launch \
     --llama_video \
     --llama_vision_encoder tmnam20/blip2-opt-2.7b-vision \
     --llama_language_model meta-llama/Llama-2-7b-hf \
-    --epochs=2 \
+    --epochs=500 \
     --lr=3e-4 \
-    --save_dir=baseline_pedestrian \
+    --save_dir=llama_video_pedestrial_all \
     --combine_datasets wts \
     --combine_datasets_val wts \
     --no_speech \
-    --batch_size=2 \
+    --batch_size=8 \
     --batch_size_val=1 \
-    --eval_skip 1 \
+    --eval_skip 25 \
     --schedule="cosine_with_warmup" \
-    --max_input_tokens=256 \
+    --max_input_tokens=16 \
     --max_output_tokens=256 \
     --wandb_project vid2seq \
-    --wandb_name test_llama_video \
+    --wandb_name llama_video_pedestrial_all \

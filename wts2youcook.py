@@ -142,15 +142,19 @@ if __name__ == "__main__":
                                 pedestrian_data, vehicle_data = convert_wts_to_youcook_format(
                                     video_filepath, json_filepath
                                 )
+                                pedestrian_data["video_path"] = video_filepath
+                                vehicle_data["video_path"] = video_filepath
                                 video_name = video_filename.split(".")[:-1]
                                 video_name = ".".join(video_name)
                                 split_annotation_data["pedestrian"][video_name] = pedestrian_data
                                 split_annotation_data["vehicle"][video_name] = vehicle_data
             elif video_id == "BDD_PC_5K":
-                vehicle_view_dir = os.path.join(caption_dir, "vehicle_view")
-                print("Vehicle view dir:", vehicle_view_dir)
-                for caption_filename in sorted(os.listdir(vehicle_view_dir)):
-                    caption_filepath = os.path.join(vehicle_view_dir, caption_filename)
+                vehicle_view_caption_dir = os.path.join(caption_dir, "vehicle_view")
+                vehicle_view_video_dir = os.path.join(video_dir, "vehicle_view")
+                print("Vehicle view dir:", vehicle_view_caption_dir)
+                for caption_filename in sorted(os.listdir(vehicle_view_caption_dir)):
+                    caption_filepath = os.path.join(vehicle_view_caption_dir, caption_filename)
+
                     print("Processing", caption_filepath)
                     if not caption_filename.endswith(".json"):
                         continue
@@ -159,23 +163,24 @@ if __name__ == "__main__":
                         caption_data = json.load(f)
                     
                     video_filename = caption_data['video_name']
+                    video_filepath = os.path.join(vehicle_view_video_dir, video_filename)
                     if video_filename.lower().endswith(".mp4"):
                         video_filename = video_filename[:-4]
-                        fps = float(caption_data.get('fps', 30))
-                        duration = 0
-                        timestamps = []
-                        vehicle_sentences = []
-                        pedestrian_sentences = []
-                        events = caption_data.get('event_phase', [])
-                        for event in events:
-                            start_time = float(event['start_time'])
-                            end_time = float(event['end_time'])
-                            start = int(start_time * fps)
-                            end = int(end_time * fps)
-                            timestamps.append((start, end))
-                            vehicle_sentences.append(event['caption_vehicle'])
-                            pedestrian_sentences.append(event['caption_pedestrian'])
-                        
+                    fps = float(caption_data.get('fps', 30))
+                    duration = 0
+                    timestamps = []
+                    vehicle_sentences = []
+                    pedestrian_sentences = []
+                    events = caption_data.get('event_phase', [])
+                    for event in events:
+                        start_time = float(event['start_time'])
+                        end_time = float(event['end_time'])
+                        start = int(start_time * fps)
+                        end = int(end_time * fps)
+                        timestamps.append((start, end))
+                        vehicle_sentences.append(event['caption_vehicle'])
+                        pedestrian_sentences.append(event['caption_pedestrian'])
+
                     
                     pedestrian_data = {
                         "duration": round(duration, 2),
@@ -183,6 +188,7 @@ if __name__ == "__main__":
                         "original_fps": round(fps, 2),
                         "timestamps": timestamps,
                         "sentences": pedestrian_sentences,
+                        "video_path": video_filepath,
                     }
                     vehicle_data = {
                         "duration": round(duration, 2),
@@ -190,6 +196,7 @@ if __name__ == "__main__":
                         "original_fps": round(fps, 2),
                         "timestamps": timestamps,
                         "sentences": vehicle_sentences,
+                        "video_path": video_filepath,
                     }
                     split_annotation_data["pedestrian"][video_filename] = pedestrian_data
                     split_annotation_data["vehicle"][video_filename] = vehicle_data
@@ -223,6 +230,8 @@ if __name__ == "__main__":
                             pedestrian_data, vehicle_data = convert_wts_to_youcook_format(
                                 video_filepath, json_filepath
                             )
+                            pedestrian_data["video_path"] = video_filepath
+                            vehicle_data["video_path"] = video_filepath
                             video_name = video_filename.split(".")[:-1]
                             video_name = ".".join(video_name)
                             split_annotation_data["pedestrian"][video_name] = pedestrian_data

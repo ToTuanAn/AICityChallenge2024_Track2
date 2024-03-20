@@ -24,7 +24,7 @@ class LlamaVideo(nn.Module):
 
         vision_encoder_output_dim = vision_encoder.config.hidden_size
         lm_output_dim = language_model.config.hidden_size
-        self.vision_projection = nn.Linear(vision_encoder_output_dim, lm_output_dim)
+        self.vision_projection = nn.Linear(768, lm_output_dim)
         if freeze_vision_encoder:
             self.freeze_vision_encoder()
         if freeze_language_model:
@@ -40,6 +40,7 @@ class LlamaVideo(nn.Module):
             param.requires_grad = False
         print("Freeze language model")
 
+    @torch.autocast(device_type="cuda")
     def forward(self, video, input_tokenized, output_tokenized):
         """Forward pass of VideoLlama
 
@@ -134,6 +135,7 @@ class LlamaVideo(nn.Module):
             )
         return model
 
+    @torch.autocast(device_type="cuda")
     @torch.no_grad()
     def generate(
         self,
