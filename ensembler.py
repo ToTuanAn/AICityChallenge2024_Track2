@@ -133,6 +133,8 @@ class MultiViewEnsembler(nn.Module):
         """
         video_features: (batch_size, num_views, num_frames, hidden_size) (4, 5, 64, 256)
         video_attention_mask: (batch_size, num_views, num_frames)
+
+        ensembler_output: (batch_size, num_frames, hidden_size)
         """
         batch_size, num_views, num_frames, hidden_size = video_features.size()
         encoded_features = self.add_position_embedding(video_features)
