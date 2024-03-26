@@ -7,7 +7,7 @@ from transformers import AutoConfig, AutoModelForCausalLM, \
                          GemmaConfig, GemmaModel, GemmaForCausalLM
 
 from transformers.modeling_outputs import CausalLMOutputWithPast
-from transformers import .
+from transformers.generation.utils import GenerateOutput
 
 from ..llava_arch import LlavaMetaModel, LlavaMetaForCausalLM
 

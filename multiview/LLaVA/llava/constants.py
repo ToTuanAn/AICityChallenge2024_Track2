@@ -25,4 +25,9 @@ MAX_VIDEO_LENGTH = 1 # only 1?
 PAD_LENGTH = 620
 
 NUM_CAMERA_VIEWS = 5
+NUM_PATCHES_POOLED = 16
+HIDDEN_SIZE_POOLED = 256
+
+MV_NUM_HEADS = 4
+MV_DROPOUT = 0.1
 #########################################

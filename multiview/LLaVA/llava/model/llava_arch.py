@@ -20,10 +20,10 @@ import torch
 import torch.nn as nn
 
 from .multimodal_encoder.builder import build_vision_tower, build_video_tower
-from .multimodal_projector.builder import build_vision_projector
-from .multivew_ensembler.builder import build_multiview_ensembler
+from .multimodal_projector.builder import build_vision_projector, build_multiview_ensembler
 
-from llava.constants import IGNORE_INDEX, IMAGE_TOKEN_INDEX, DEFAULT_IMAGE_PATCH_TOKEN, DEFAULT_IM_START_TOKEN, DEFAULT_IM_END_TOKEN, NUM_CAMERA_VIEWS
+from llava.constants import IGNORE_INDEX, IMAGE_TOKEN_INDEX, DEFAULT_IMAGE_PATCH_TOKEN, DEFAULT_IM_START_TOKEN, DEFAULT_IM_END_TOKEN, \
+                            NUM_CAMERA_VIEWS, NUM_PATCHES_POOLED, HIDDEN_SIZE_POOLED
 
 from llava.mm_utils import get_anyres_image_grid_shape
 
@@ -36,14 +36,14 @@ class LlavaMetaModel:
         if hasattr(config, "mm_vision_tower") or hasattr(config, "mm_video_tower"):
             if hasattr(config, "mm_vision_tower"):
                 self.vision_tower = build_vision_tower(config, delay_load=True)
-                hidden_size = (self.vision_tower.num_patches + 1) * self.vision_tower.hidden_size
-                self.multiview_ensembler = build_multiview_ensembler(config.hidden_size * (self.vision_tower.num_patches + 1))
+                self.multiview_ensembler = build_multiview_ensembler(NUM_PATCHES_POOLED * HIDDEN_SIZE_POOLED, 1)
             
             if hasattr(config, "mm_video_tower"):
                 self.video_tower = build_video_tower(config, delay_load=True)
-                self.multiview_ensembler = build_multiview_ensembler(config.hidden_size * (self.video_tower.num_patches + 1))
+                self.multiview_ensembler = build_multiview_ensembler(NUM_PATCHES_POOLED * HIDDEN_SIZE_POOLED, self.video_tower.config.num_frames)
             
             self.mm_projector = build_vision_projector(config)
+            self.pooling = nn.AdaptiveAvgPool2d((NUM_PATCHES_POOLED, HIDDEN_SIZE_POOLED)) 
     
             # ???
             if 'unpad' in getattr(config, 'mm_patch_merge_type', ''):
@@ -68,11 +68,15 @@ class LlavaMetaModel:
         ###########################################################################################
         # Video-Llava
         video_tower = model_args.video_tower
-        assert vision_tower is None and video_tower is not None
+        assert vision_tower is not None or video_tower is not None
         ###########################################################################################
         mm_vision_select_layer = model_args.mm_vision_select_layer
         mm_vision_select_feature = model_args.mm_vision_select_feature
         pretrain_mm_mlp_adapter = model_args.pretrain_mm_mlp_adapter
+        ###########################################################################################
+        # Video-Llava
+        pretrain_multiview_ensembler = model_args.pretrain_multiview_ensembler
+        ###########################################################################################
         # ???
         mm_patch_merge_type = model_args.mm_patch_merge_type
 
@@ -130,8 +134,12 @@ class LlavaMetaModel:
                                              getattr(video_tower, "hidden_size", -1))
             num_patches = max(getattr(vision_tower, "num_patches", -1),
                               getattr(video_tower, "num_patches", -1))
+        num_frames = video_tower.config.num_frames # bruh
         ###########################################################################################
-
+            
+        def get_w(weights, keyword):
+            return {k.split(keyword + '.')[1]: v for k, v in weights.items() if keyword in k}
+        
         if getattr(self, 'mm_projector', None) is None:
             self.mm_projector = build_vision_projector(self.config)
 
@@ -145,23 +153,28 @@ class LlavaMetaModel:
             # In case it is frozen by LoRA
             for p in self.mm_projector.parameters():
                 p.requires_grad = True
-
+        
         if pretrain_mm_mlp_adapter is not None:
             mm_projector_weights = torch.load(pretrain_mm_mlp_adapter, map_location='cpu')
-            def get_w(weights, keyword):
-                return {k.split(keyword + '.')[1]: v for k, v in weights.items() if keyword in k}
-
             self.mm_projector.load_state_dict(get_w(mm_projector_weights, 'mm_projector'))
 
+        ##########################################################################################################    
+        # Video-Llava
         if getattr(self, "multiview_ensembler", None) is None:
-            self.multiview_ensembler = build_multiview_ensembler(self.config.hidden_size * (num_patches + 1))
+            self.multiview_ensembler = build_multiview_ensembler(NUM_PATCHES_POOLED * HIDDEN_SIZE_POOLED, num_frames)
         else:
             # In case it is frozen by LoRA
             for p in self.multiview_ensembler.parameters():
                 p.requires_grad = True
 
-        # TODO: Load pretrained ensembler?
-        
+        if pretrain_multiview_ensembler is not None:
+            multiview_ensembler_weights = torch.load(pretrain_multiview_ensembler, map_location="cpu")
+            self.multiview_ensembler.load_state_dict(get_w(multiview_ensembler_weights, "multiview_ensembler"))
+
+        if getattr(self, "pooling", None) is None:
+            self.pooling = nn.AdaptiveAvgPool2d((NUM_PATCHES_POOLED, HIDDEN_SIZE_POOLED)) 
+        ##########################################################################################################
+            
 
 # ???
 def unpad_image(tensor, original_size):
@@ -213,6 +226,7 @@ class LlavaMetaForCausalLM(ABC):
     def encode_images(self, images):
         image_features = self.get_model().get_vision_tower()(images)
         image_features = self.get_model().mm_projector(image_features)
+        image_features = self.get_model().pooling(image_features)
         return image_features
     
     #################################################################################################################################
@@ -220,16 +234,17 @@ class LlavaMetaForCausalLM(ABC):
     def encode_videos(self, videos):
         video_features = self.get_model().get_video_tower()(videos)
         video_features = self.get_model().mm_projector(video_features)
+        video_features = self.get_model().pooling(video_features)
         return video_features
     
-    def ensemble_multiview(self, videos):
-        video_features = self.get_model().multiview_ensembler(videos)
+    def ensemble_multiview(self, videos, video_attention_masks):
+        video_features = self.get_model().multiview_ensembler(videos, video_attention_masks)
         return video_features
     #################################################################################################################################
 
     def prepare_inputs_labels_for_multimodal(
         self, input_ids, position_ids, attention_mask, past_key_values, labels,
-        images, image_sizes=None
+        images, image_attention_masks, image_sizes=None
     ):
         vision_tower = self.get_vision_tower()
         #################################################################################################################################
@@ -239,23 +254,15 @@ class LlavaMetaForCausalLM(ABC):
         if (vision_tower is None and video_tower is None) or images is None or input_ids.shape[1] == 1:
             return input_ids, position_ids, attention_mask, past_key_values, None, labels
 
-        '''
-        images = [
-            video(t, 3, 224, 224),
-            video(t, 3, 224, 224),
-            video(t, 3, 224, 224),
-            video(t, 3, 224, 224),
-            ...
-        ]
-        '''
-        # c: num channels, t: num frames, n: num patches, d: embed size or video_tower.hidden_size
         videos = torch.stack(images) # b, c, t, h, w
+        video_attention_masks = torch.stack(image_attention_masks) # b, t
         if getattr(videos, "ndim", 0) == 5:
-            video_features = self.encode_videos(videos) # (b, t, num_patches, hidden_size)
-            video_features = rearrange(video_features, "(b v) t n d -> b v t (n d)", v=NUM_CAMERA_VIEWS) # (b, num_views, t, num_patches*hidden_size)
-            video_features = self.ensemble_multiview(video_features) # (b, t, num_patches*hidden_size)
-            video_features = rearrange(video_features, "b t (n d) -> b t n d", d=self.get_model().config.hidden_size)
-        
+            video_features = self.encode_videos(videos) # (b, t, num_patches_pooled, hidden_size_pooled)
+            video_features = rearrange(video_features, "(b v) t n d -> b v t (n d)", v=NUM_CAMERA_VIEWS) # (b, num_camera_views, t, num_patches_pooled, hidden_size_pooled)
+            video_attention_masks = rearrange(video_attention_masks, "(b v) t -> b v t", v=NUM_CAMERA_VIEWS)
+            video_features = self.ensemble_multiview(video_features, video_attention_masks) # (b, t, num_patches_pooled * hidden_size_pooled)
+            video_features = rearrange(video_features, "b t (n d) -> b t n d", d=self.get_model().config.hidden_size) #(b, t, num_patches_pooled, hidden_size_pooled)
+            
         image_features = [video_features[i][j] for i in range(video_features.shape[0]) for j in range(video_features.shape[1])] # [b * t of (n, d)]
         #################################################################################################################################
         # if type(images) is list or images.ndim == 5:
@@ -431,6 +438,8 @@ class LlavaMetaForCausalLM(ABC):
 
         return None, position_ids, attention_mask, past_key_values, new_input_embeds, new_labels
 
+    # TODO: Support multiview ensembler
+    # NOTE: Not affected in our use case so no worries by far
     def initialize_vision_tokenizer(self, model_args, tokenizer):
         if model_args.mm_use_im_patch_token:
             tokenizer.add_tokens([DEFAULT_IMAGE_PATCH_TOKEN], special_tokens=True)
@@ -457,7 +466,7 @@ class LlavaMetaForCausalLM(ABC):
                     p.requires_grad = True
                 for p in self.get_output_embeddings().parameters():
                     p.requires_grad = False
-
+            
             if model_args.pretrain_mm_mlp_adapter:
                 mm_projector_weights = torch.load(model_args.pretrain_mm_mlp_adapter, map_location='cpu')
                 embed_tokens_weight = mm_projector_weights['model.embed_tokens.weight']

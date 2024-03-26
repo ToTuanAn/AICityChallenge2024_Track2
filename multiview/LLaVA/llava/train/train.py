@@ -35,6 +35,7 @@ from torch.utils.data import Dataset
 from llava.train.llava_trainer import LLaVATrainer
 
 from llava import conversation as conversation_lib
+from llava.model.language_model.llava_llama import LlavaLlamaForCausalLM
 from llava.model import *
 from llava.mm_utils import tokenizer_image_token
 
@@ -71,6 +72,8 @@ class ModelArguments:
 
     ###########################################################################################
     # Video-Llava
+    tune_multiview_ensembler: bool = field(default=False)
+    pretrain_multiview_ensembler: Optional[str] = field(default=None)
     video_tower: Optional[str] = field(default=None)
     ###########################################################################################
 
@@ -128,8 +131,8 @@ class TrainingArguments(transformers.TrainingArguments):
 
     ###########################################################################################
     # Video-Llava
+    freeze_multiview_ensembler: bool = field(default=False)
     multiview_ensembler_lr: Optional[float] = None
-    tokenizer_model_max_length: Optional[int] = None
     ###########################################################################################
 
 
@@ -192,7 +195,7 @@ def find_all_linear_names(model):
     lora_module_names = set()
     #######################################################################################################
     # Video-Llava
-    multimodal_keywords = ['mm_projector', 'vision_tower', 'vision_resampler', "multiview_ensembler"]
+    multimodal_keywords = ['mm_projector', 'vision_tower', 'vision_resampler', "video_tower", "multiview_ensembler"]
     #######################################################################################################
     for name, module in model.named_modules():
         if any(mm_keyword in name for mm_keyword in multimodal_keywords):
@@ -210,40 +213,44 @@ def safe_save_model_for_hf_trainer(trainer: transformers.Trainer,
                                    output_dir: str):
     """Collects the state dict and dump to disk."""
 
-    if getattr(trainer.args, "tune_mm_mlp_adapter", False):
-        # Only save Adapter
-        keys_to_match = ['mm_projector']
-        if getattr(trainer.args, "use_im_start_end", False):
-            keys_to_match.extend(['embed_tokens', 'embed_in'])
-
-        weight_to_save = get_mm_adapter_state_maybe_zero_3(trainer.model.named_parameters(), keys_to_match)
-
-        #######################################################################################################
-        # Video-Llava
-        _keys_to_match = ["multiview_ensembler"]
-        _weight_to_save = get_mm_adapter_state_maybe_zero_3(trainer.model.named_parameters(), keys_to_match)
-        #######################################################################################################
-
+    if getattr(trainer.args, "tune_mm_mlp_adapter", False) or getattr(trainer.args, "tune_multiview_ensembler", False):
         trainer.model.config.save_pretrained(output_dir)
 
         current_folder = output_dir.split('/')[-1]
         parent_folder = os.path.dirname(output_dir)
-        if trainer.args.local_rank == 0 or trainer.args.local_rank == -1:
-            #######################################################################################################
-            # Video-Llava
-            if current_folder.startswith('checkpoint-'):
-                mm_projector_folder = os.path.join(parent_folder, "mm_projector")
-                os.makedirs(mm_projector_folder, exist_ok=True)
-                torch.save(weight_to_save, os.path.join(mm_projector_folder, f'{current_folder}.bin'))
 
-                multiview_ensembler_folder = os.path.join(parent_folder, "multiview_projector")
-                os.makedirs(multiview_ensembler_folder, exist_ok=True)
-                torch.save(_weight_to_save, os.path.join(multiview_ensembler_folder, f"{current_folder}.bin"))
-            else:
-                torch.save(weight_to_save, os.path.join(output_dir, f'mm_projector.bin'))
-                torch.save(_weight_to_save, os.path.join(output_dir, f"multiview_ensembler.bin"))
-            #######################################################################################################
+        # Only save Adapter
+        if getattr(trainer.args, "tune_mm_mlp_adapter", False):
+            keys_to_match = ['mm_projector']
+            if getattr(trainer.args, "use_im_start_end", False):
+                keys_to_match.extend(['embed_tokens', 'embed_in'])
+
+            weight_to_save = get_mm_adapter_state_maybe_zero_3(trainer.model.named_parameters(), keys_to_match)
+
+            if trainer.args.local_rank == 0 or trainer.args.local_rank == -1:
+                if current_folder.startswith('checkpoint-'):
+                    mm_projector_folder = os.path.join(parent_folder, "mm_projector")
+                    os.makedirs(mm_projector_folder, exist_ok=True)
+                    torch.save(weight_to_save, os.path.join(mm_projector_folder, f'{current_folder}.bin'))
+                else:
+                    torch.save(weight_to_save, os.path.join(output_dir, f'mm_projector.bin'))
+
+        #######################################################################################################
+        # Video-Llava
+        if getattr(trainer.args, "tune_multiview_ensembler", False):
+            _keys_to_match = ["multiview_ensembler"]
+            _weight_to_save = get_mm_adapter_state_maybe_zero_3(trainer.model.named_parameters(), _keys_to_match)
+
+            if trainer.args.local_rank == 0 or trainer.args.local_rank == -1:
+                if current_folder.startswith('checkpoint-'):
+                    multiview_ensembler_folder = os.path.join(parent_folder, "multiview_projector")
+                    os.makedirs(multiview_ensembler_folder, exist_ok=True)
+                    torch.save(_weight_to_save, os.path.join(multiview_ensembler_folder, f"{current_folder}.bin"))
+                else:
+                    torch.save(_weight_to_save, os.path.join(output_dir, f"multiview_ensembler.bin"))
+        #######################################################################################################
         return
+    
 
     if trainer.deepspeed:
         torch.cuda.synchronize()
@@ -361,7 +368,7 @@ def preprocess_multimodal(
                 # No "mmtag" supported for video?
                 num_video_tokens = sentence["value"].count(DEFAULT_VIDEO_TOKEN)
                 if num_video_tokens > MAX_VIDEO_LENGTH:
-                    raise ValueError(f"{sentence["value"]}")
+                    sentence["value"].replace(DEFAULT_VIDEO_TOKEN * num_video_tokens, DEFAULT_VIDEO_TOKEN * MAX_VIDEO_LENGTH)
 
             # a <video> is treated as `num_frames * <image>` 
             vid_replace_token = DEFAULT_IMAGE_TOKEN * data_args.num_frames
@@ -729,7 +736,7 @@ class LazySupervisedDataset(Dataset):
         length_list = []
         for sample in self.list_data_dict:
             cur_len = sum(len(conv['value'].split()) for conv in sample['conversations'])
-            cur_len = cur_len if 'image' in sample else -cur_len
+            cur_len = cur_len if ('image' in sample or 'videos' in sample) else -cur_len
             length_list.append(cur_len)
         return length_list
 
@@ -763,23 +770,24 @@ class LazySupervisedDataset(Dataset):
             }
             '''
             if "videos" in sources[0]:
-                video_files = self.list_data_dict[i]["video"]
+                video_files = self.list_data_dict[i]["videos"]
                 video_folder = self.data_args.video_folder
                 video_processor = self.data_args.video_processor
 
                 video_paths = [os.path.join(video_folder, file) for file in video_files]
-                # [(3, 8, 224, 224), (3, 8, 224, 224), ]
                 image = [video_processor(path, return_tensors="pt")["pixel_values"][0] for path in video_paths]
+                image_attention_masks = [torch.ones(i.shape[1], dtype=torch.bool) for i in image]
 
-                num_missing_vids = NUM_CAMERA_VIEWS - len(video_files)
-                for i in range(num_missing_vids):
-                    image.append(torch.zeros(8, 3, 224, 224))  
+                assert len(image) > 0, f"Cannot open some videos with id: {sources[0]['id']}"
+                for _ in range(len(image), NUM_CAMERA_VIEWS):
+                    image.append(torch.zeros(*image[0].shape))
+                    image_attention_masks.append(torch.zeros(image[0].shape[1], dtype=torch.bool))
                 
-                sources = preprocess_multimodal(copy.deepcopy([s["conversation"] for s in sources]), 
+                sources = preprocess_multimodal(copy.deepcopy([s["conversations"] for s in sources]), 
                                                 self.data_args)
                 data_dict = preprocess(sources,
-                                    self.tokenizer,
-                                    has_image=True)
+                                       self.tokenizer,
+                                       has_image=True)
             ##################################################################################
 
             if isinstance(i, int):
@@ -789,11 +797,15 @@ class LazySupervisedDataset(Dataset):
             # image exist in the data
             if 'videos' in self.list_data_dict[i]:
                 data_dict['image'] = image
+                data_dict["image_attention_masks"] = image_attention_masks
             elif self.data_args.is_multimodal:
                 # image does not exist in the data, but the model is multimodal
-                crop_size = {"height": 224, "width": 224}
-                data_dict['image'] = [torch.zeros(3, crop_size['height'], crop_size['width'])]
+                crop_size = {"height": self.data_args.image_size, "width": self.data_args.image_size}
+                data_dict['image'] = [torch.zeros(3, self.data_args.num_frames, self.data_args.num_frames, crop_size['height'], crop_size['width']) for _ in range(NUM_CAMERA_VIEWS)]
+                data_dict["image_attention_masks"] = [torch.zeros(self.data_args.num_frames, dtype=torch.bool) for _ in range(NUM_CAMERA_VIEWS)] 
+            
             return data_dict
+        
         except Exception as e:
             print(f"Error: {e}")
             return self.__getitem__(random.randint(0, self.__len__() - 1))
@@ -823,26 +835,35 @@ class DataCollatorForSupervisedDataset(object):
             attention_mask=input_ids.ne(self.tokenizer.pad_token_id),
         )
 
-        if "image" in instances[0]:
-            images = [instance['image'] for instance in instances]
+        if all("image" in instance and instance["image"] for instance in instances):
+            list_images = [instance["image"] for instance in instances]
             #####################################################################
             # Video-Llava
-            new_images = []
-            for image in images:
-                if type(image) is list:
-                    for i in image:
-                        new_images.append(i)
-                else:
-                    new_images.append(image)
-            images = new_images     
-            batch["images"] = images                   
+            new_list_images = []
+            for images in list_images:
+                for image in images:
+                    new_list_images.append(image)
+            list_images = new_list_images     
+            batch["images"] = list_images                   
             #####################################################################
             # if all(x is not None and x.shape == images[0].shape for x in images):
             #     batch['images'] = torch.stack(images)
             # else:
             #     batch['images'] = images
         else:
-            raise ValueError(f"Error: {instances}")
+            raise ValueError(f"Image mismatched: {instances}")
+        
+        if all("image_attention_masks" in instance and instance["image_attention_masks"] for instance in instances):
+            list_masks = [instance["image_attention_masks"] for instance in instances]
+            new_list_masks = []
+            for masks in list_masks:
+                for mask in masks:
+                    new_list_masks.append(mask)
+            list_masks = new_list_masks
+            batch["image_attention_masks"] = list_masks
+        else:
+            raise ValueError(f"Image attention masks mismatched: {instances}")
+        
         return batch
 
 
@@ -882,7 +903,7 @@ def train(attn_implementation=None):
                 llm_int8_skip_modules=["mm_projector", "multiview_ensembler"],
                 ####################################################################################################################
                 llm_int8_threshold=6.0,
-                llm_int8_has_fp16_weight=False,
+                llm_int8_has_fp16_weight=False, # if you don't have Ampere GPU?
                 bnb_4bit_compute_dtype=compute_dtype,
                 bnb_4bit_use_double_quant=training_args.double_quant,
                 bnb_4bit_quant_type=training_args.quant_type # {'fp4', 'nf4'}
@@ -1008,29 +1029,31 @@ def train(attn_implementation=None):
             data_args.video_processor = video_tower.video_processor
             data_args.is_multimodal = True
             data_args.num_frames = video_tower.config.num_frames
-    ###################################################################################################################
 
         model.config.image_aspect_ratio = data_args.image_aspect_ratio
         model.config.tokenizer_padding_side = tokenizer.padding_side
+        model.config.tokenizer_model_max_length = tokenizer.model_max_length
         
-        ###################################################################################################################
-        # Video-Llava
-        tokenizer_model_max_length = training_args.tokenizer_model_max_length
-        model.config.tokenizer_model_max_length = tokenizer.model_max_length if tokenizer_model_max_length is None else tokenizer_model_max_length
-        
-
         model.config.tune_mm_mlp_adapter = training_args.tune_mm_mlp_adapter = model_args.tune_mm_mlp_adapter
-        if model_args.tune_mm_mlp_adapter:
+        model.config.tune_multiview_ensembler = training_args.tune_multiview_ensembler = model_args.tune_multiview_ensembler
+        if model_args.tune_mm_mlp_adapter or model_args.tune_multiview_ensembler:
             model.requires_grad_(False)
-            for p in model.get_model().mm_projector.parameters():
-                p.requires_grad = True
-            for p in model.get_model().multiview_ensembler.parameters():
-                p.requires_grad = True
+
+            if model_args.tune_mm_mlp_adapter:
+                for p in model.get_model().mm_projector.parameters():
+                    p.requires_grad = True
+        
+            if model_args.tune_multiview_ensembler:
+                for p in model.get_model().multiview_ensembler.parameters():
+                    p.requires_grad = True
 
         model.config.freeze_mm_mlp_adapter = training_args.freeze_mm_mlp_adapter
         if training_args.freeze_mm_mlp_adapter:
             for p in model.get_model().mm_projector.parameters():
                 p.requires_grad = False
+
+        model.config.freeze_multiview_ensembler = training_args.freeze_multiview_ensembler
+        if training_args.freeze_multiview_ensembler:
             for p in model.get_model().multiview_ensembler.parameters():
                 p.requires_grad = False
 
@@ -1041,7 +1064,7 @@ def train(attn_implementation=None):
         model.config.mm_use_im_start_end = data_args.mm_use_im_start_end = model_args.mm_use_im_start_end
         model.config.mm_projector_lr = training_args.mm_projector_lr
         model.config.multiview_ensembler_lr = training_args.multiview_ensembler_lr
-        ###################################################################################################################
+    ###################################################################################################################
         training_args.use_im_start_end = model_args.mm_use_im_start_end
         model.config.mm_use_im_patch_token = model_args.mm_use_im_patch_token
         model.initialize_vision_tokenizer(model_args, tokenizer=tokenizer)
@@ -1052,12 +1075,16 @@ def train(attn_implementation=None):
             if isinstance(module, LoraLayer):
                 if training_args.bf16:
                     module = module.to(torch.bfloat16)
+                elif training_args.fp16:
+                    module = module.to(torch.float16)
             if 'norm' in name:
                 module = module.to(torch.float32)
             if 'lm_head' in name or 'embed_tokens' in name:
                 if hasattr(module, 'weight'):
                     if training_args.bf16 and module.weight.dtype == torch.float32:
                         module = module.to(torch.bfloat16)
+                    elif 'embed_tokens' in name and training_args.fp16 and module.weight.dtype == torch.float32:
+                        module = module.to(torch.float16)
 
     data_module = make_supervised_data_module(tokenizer=tokenizer,
                                               data_args=data_args)
@@ -1085,6 +1112,39 @@ def train(attn_implementation=None):
             model.config.save_pretrained(training_args.output_dir)
             model.save_pretrained(training_args.output_dir, state_dict=state_dict)
             torch.save(non_lora_state_dict, os.path.join(training_args.output_dir, 'non_lora_trainables.bin'))
+
+            #######################################################################################################
+            # Video-Llava
+            current_folder = training_args.output_dir.split('/')[-1]
+            parent_folder = os.path.dirname(training_args.output_dir)
+
+            # Only save Adapter
+            if model_args.tune_mm_mlp_adapter:
+                keys_to_match = ['mm_projector']
+                if model_args.mm_use_im_start_end:
+                    keys_to_match.extend(['embed_tokens', 'embed_in'])
+
+                weight_to_save = get_mm_adapter_state_maybe_zero_3(trainer.model.named_parameters(), keys_to_match)
+
+                if current_folder.startswith('checkpoint-'):
+                    mm_projector_folder = os.path.join(parent_folder, "mm_projector")
+                    os.makedirs(mm_projector_folder, exist_ok=True)
+                    torch.save(weight_to_save, os.path.join(mm_projector_folder, f'{current_folder}.bin'))
+                else:
+                    torch.save(weight_to_save, os.path.join(training_args.output_dir, f'mm_projector.bin'))
+
+        
+            if model_args.tune_multiview_ensembler:
+                _keys_to_match = ["multiview_ensembler"]
+                _weight_to_save = get_mm_adapter_state_maybe_zero_3(trainer.model.named_parameters(), _keys_to_match)
+
+                if current_folder.startswith('checkpoint-'):
+                    multiview_ensembler_folder = os.path.join(parent_folder, "multiview_projector")
+                    os.makedirs(multiview_ensembler_folder, exist_ok=True)
+                    torch.save(_weight_to_save, os.path.join(multiview_ensembler_folder, f"{current_folder}.bin"))
+                else:
+                    torch.save(_weight_to_save, os.path.join(training_args.output_dir, f"multiview_ensembler.bin"))
+            #######################################################################################################
     else:
         safe_save_model_for_hf_trainer(trainer=trainer,
                                        output_dir=training_args.output_dir)
