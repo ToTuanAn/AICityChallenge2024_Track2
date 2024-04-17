@@ -2,7 +2,7 @@
 
 The Motion Blur image is created by adding up the frames of each phase and multiplying by the weight corresponding to the order of that frame.
 
-$$ motion\_blur = \sum ^{len(frames)} _{i=1} {i \times frames_i \over len(frames)} $$
+$$ motion\_ blur = \sum ^{len(frames)} _{i=1} {i \times frames_i \over len(frames)} $$
 
 - This is the process script to convert the video into motion blur image:
 
