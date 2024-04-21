@@ -17,7 +17,7 @@ pip install -r requirements.txt
 ### Preprocessing
 ```
 cd vid2seq
-# Construct a csv file that each row is a <video_path>, <feature_path>. For example: data/video1.mp4, data/video1.npy
+//Construct a csv file that each row is a <video_path>, <feature_path>. For example: data/video1.mp4, data/video1.npy
 python extract/make_csv.py
 python extract/extract.py --csv <csv_path> --framerate 30
 ``` 
