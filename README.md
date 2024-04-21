@@ -4,6 +4,7 @@
 - Contributior: Tuan-An To, Minh-Nam Tran, Trong-Bao Ho, Thien-Loc Ha, Quang-Tan Nguyen, Hoang-Chau Luong, Thanh-Duy Cao
 
 ## Framework
+![Alt text](assets/OverviewMethod.png?raw=true)
 
 ## Setup 
 ```
@@ -40,4 +41,4 @@ Please check [Motion-Blur Link](https://github.com/ToTuanAn/AICityChallenge2024_
 [To be updated]
 
 ## Acknowledgement
-We would like to thank the [VId2Seq](https://github.com/antoyang/VidChapters) repository for their outstanding video captioning.
+We would like to thank the [Vid2Seq](https://github.com/antoyang/VidChapters) repository for their outstanding video captioning.
