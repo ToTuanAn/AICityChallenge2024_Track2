@@ -1,4 +1,4 @@
-# [CVPRW] 2024 AI City Challenge: Traffic Safety Description and Analysis
+# [CVPRW] 2024 AI City Challenge: Multi-perspective Traffic Video Description Model with Fine grained Refinement Approach
 
 - Paper: [To be updated] 
 - Contributior: Tuan-An To, Minh-Nam Tran, Trong-Bao Ho, Thien-Loc Ha, Quang-Tan Nguyen, Hoang-Chau Luong, Thanh-Duy Cao
