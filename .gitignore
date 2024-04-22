@@ -8,7 +8,7 @@ analysis/output/
 bbox_pedestrian/output/
 bbox_pedestrian/model/
 
-new_annotations/
+annotations*
 *wandb*
 *.
 cache*

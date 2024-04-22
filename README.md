@@ -1,7 +1,7 @@
 # [CVPRW] 2024 AI City Challenge: Multi-perspective Traffic Video Description Model with Fine grained Refinement Approach
 
 - Paper: [To be updated] 
-- Contributior: Tuan-An To, Minh-Nam Tran, Trong-Bao Ho, Thien-Loc Ha, Quang-Tan Nguyen, Hoang-Chau Luong, Thanh-Duy Cao
+- Contributor: Tuan-An To, Minh-Nam Tran, Trong-Bao Ho, Thien-Loc Ha, Quang-Tan Nguyen, Hoang-Chau Luong, Thanh-Duy Cao
 
 ## Framework
 ![Alt text](assets/OverviewMethod.png?raw=true)
@@ -15,12 +15,72 @@ pip install -r requirements.txt
 
 ## Single-view 
 ### Preprocessing
-1. Construct a csv file that each row is a <video_path>, <feature_path>. For example: data/video1.mp4, data/video1.npy
+1. Convert to from the WTS to YouCook format.
+
+Convert the competition dataset to YouCook-format annotation files by running the following commands:
+```bash
+python bdd5k2youcook_by_phase.py --videos_dir datasets/BDD_PC_5K/videos --caption_dir datasets/BDD_PC_5K/captions --output_dir annotations/BDD_PC_5K --merge_val
+
+python wts2youcook_by_phase.py --videos_dir datasets/BDD_PC_5K/videos --caption_dir datasets/WTS/captions --output_dir annotations/WTS --merge_val
+```
+
+where the `--merge_val` flag is used to merge the validation set into the training set, `--videos_dir` is the path to the video directory, `--caption_dir` is the path to the caption directory, and `--output_dir` is the path to the output directory.
+
+The structure of the video directory of BDD_PC_5K should be as follows:
+```
+bdd_pc_5k_video_dir /
+├── train /
+│   └── vehicle_view /
+│       ├── video1.mp4
+│       ├── video2.mp4
+│       └── ...
+│   
+├── val /
+│   └── vehicle_view /
+│       ├── video1.mp4
+│       ├── video2.mp4
+│       └── ...
+```
+
+and the structure of the video directory of WTS should be as follows:
+```
+wts_video_dir /
+├── train /
+│   ├── video_id_1 /
+│   │   ├── overhead_view /
+│   │   |   ├── abc.mp4
+│   │   |   └── ...
+│   │   └── vehicle_view /
+│   │       ├── abc.mp4
+│   │       └── ...
+│   ├── video_id_2 /
+│   │   └── overhead_view /
+│   │       ├── abc.mp4
+│   │       └── ...
+│   └── ...
+│
+├── val /
+│   ├── video_id_1 /
+│   |   ├── overhead_view /
+│   |   |   ├── abc.mp4
+│   |   |   └── ...
+│   |   └── vehicle_view /
+│   |       ├── abc.mp4
+│   |       └── ...
+│   ├── video_id_2 /
+│   └── ...
+```
+
+The caption directory structures are similar to the corresponding video directory structures.
+
+
+2. Construct a csv file that each row is a <video_path>, <feature_path>. For example: data/video1.mp4, data/video1.npy
 ```
 cd vid2seq
 python extract/make_csv.py
 python extract/extract.py --csv <csv_path> --framerate 30
 ``` 
+
 
 ### Inference
 1. Go to notebooks/vid2seq_inference.ipynb and construct the checkpoint path and test-set embedded feature path. Then run the notebook.

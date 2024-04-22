@@ -27,6 +27,7 @@ def parse_args():
         type=str,
         default="./datasets/new_annotations",
     )
+    parser.add_argument("--merge_val", action="store_true")
     return parser.parse_args()
 
 
@@ -37,7 +38,7 @@ def convert_wts_to_youcook_format(video_filepath, caption_filepath):
     fps = 30
     if video_filepath.split("/")[-3] == "20231006_21_CN5_T1":
         print("Large videos: ", video_filepath)
-        fps = 10 
+        fps = 10
 
     frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     duration = frame_count / video_fps
@@ -56,6 +57,8 @@ def convert_wts_to_youcook_format(video_filepath, caption_filepath):
         "original_fps": round(fps, 2),
         "timestamps": [],
         "sentences": [],
+        "video_fps": video_fps,
+        "timestamps_video_fps": [],
     }
     vehicle_data = deepcopy(pedestrian_data)
     for event in event_phase:
@@ -64,21 +67,20 @@ def convert_wts_to_youcook_format(video_filepath, caption_filepath):
         caption_pedestrian = event["caption_pedestrian"]
         caption_vehicle = event["caption_vehicle"]
 
-        start = round(start_time * fps)
-        end = round(end_time * fps)
+        # start = round(start_time * fps)
+        # end = round(end_time * fps)
+        start = start_time
+        end = end_time
+        video_start = round(start_time * video_fps)
+        video_end = round(end_time * video_fps)
 
         pedestrian_data["timestamps"].append([start, end])
         pedestrian_data["sentences"].append(caption_pedestrian)
+        pedestrian_data["timestamps_video_fps"].append([video_start, video_end])
 
         vehicle_data["timestamps"].append([start, end])
         vehicle_data["sentences"].append(caption_vehicle)
-
-    # print("pedestrian data:")
-    # print(json.dumps(pedestrian_data, indent=4))
-
-    # print("Vehicle data:")
-    # print(json.dumps(vehicle_data, indent=4))
-    # exit()
+        vehicle_data["timestamps_video_fps"].append([video_start, video_end])
 
     return pedestrian_data, vehicle_data
 
@@ -91,250 +93,116 @@ if __name__ == "__main__":
     OUTPUT_DIR = args.output_dir
 
     os.makedirs(OUTPUT_DIR, exist_ok=True)
-    
+
+    annotation_data = {}
+
+    for split in sorted(os.listdir(CAPTION_DIR)):
+        if split not in ["train", "val"]:
+            continue
+
+        videos_split_dir = os.path.join(VIDEOS_DIR, split)
+        caption_split_dir = os.path.join(CAPTION_DIR, split)
+
+        split_annotation_data = {
+            "pedestrian": {},
+            "vehicle": {},
+        }
+
     for split in sorted(os.listdir(CAPTION_DIR)):
         if split not in ["train", "val"]:
             continue
         videos_split_dir = os.path.join(VIDEOS_DIR, split)
         caption_split_dir = os.path.join(CAPTION_DIR, split)
-        
+
         split_annotation_data = {
             "pedestrian": {},
             "vehicle": {},
         }
-        
-        for video_id in sorted(os.listdir(caption_split_dir)):
-            # print(f"Processing {video_id} ...")
+
+        video_ids = sorted(os.listdir(caption_split_dir))
+        print(f"No. of videos: {len(video_ids)}")
+        if "normal_trimmed" in video_ids:
+            video_ids.remove("normal_trimmed")
+            normal_trimmed_dir = os.path.join(caption_split_dir, "normal_trimmed")
+            normal_trimmed_ids = [
+                os.path.join("normal_trimmed", x)
+                for x in os.listdir(normal_trimmed_dir)
+            ]
+            video_ids.extend(sorted(normal_trimmed_ids))
+            print(f"Normal trimmed: {len(normal_trimmed_ids)}")
+
+        print(f"Final no. of videos: {len(video_ids)}")
+        # print(video_ids)
+        for video_id in video_ids:
             video_dir = os.path.join(videos_split_dir, video_id)
             caption_dir = os.path.join(caption_split_dir, video_id)
-            
-            if video_id == "normal_trimmed":
-                for normal_video_id in sorted(os.listdir(video_dir)):
-                    normal_video_dir = os.path.join(video_dir, normal_video_id)
-                    normal_caption_dir = os.path.join(caption_dir, normal_video_id)
-                    
-                    for normal_view in sorted(os.listdir(normal_caption_dir)):
-                        normal_video_view_dir = os.path.join(normal_video_dir, normal_view)
-                        normal_caption_view_dir = os.path.join(normal_caption_dir, normal_view)
-                        
-                        for json_file in os.listdir(normal_caption_view_dir):
-                            if not json_file.endswith(".json"):
-                                continue
-                            
-                            json_filepath = os.path.join(normal_caption_view_dir, json_file)
-                            # print("Processing", json_filepath)
-                            with open(json_filepath, "r") as f:
-                                caption_data = json.load(f)
-                            
-                            video_filenames = []
-                            if normal_view.lower() == "overhead_view":
-                                video_filenames = caption_data['overhead_videos']
-                            else:
-                                video_filenames.append(caption_data['vehicle_view'])
 
-                            for video_filename in video_filenames:
-                                video_filepath = os.path.join(normal_video_view_dir, video_filename)
-                                if not video_filename.lower().endswith(".mp4"):
-                                    print("Skipping", video_filepath)
-                                    continue
-                                
-                                # print("Processing", video_filepath)
-                                pedestrian_data, vehicle_data = convert_wts_to_youcook_format(
-                                    video_filepath, json_filepath
-                                )
-                                pedestrian_data["video_path"] = video_filepath
-                                vehicle_data["video_path"] = video_filepath
-                                video_name = video_filename.split(".")[:-1]
-                                video_name = ".".join(video_name)
-                                split_annotation_data["pedestrian"][video_name] = pedestrian_data
-                                split_annotation_data["vehicle"][video_name] = vehicle_data
-            elif video_id == "BDD_PC_5K":
-                vehicle_view_caption_dir = os.path.join(caption_dir, "vehicle_view")
-                vehicle_view_video_dir = os.path.join(video_dir, "vehicle_view")
-                print("Vehicle view dir:", vehicle_view_caption_dir)
-                for caption_filename in sorted(os.listdir(vehicle_view_caption_dir)):
-                    caption_filepath = os.path.join(vehicle_view_caption_dir, caption_filename)
+            if not os.path.isdir(video_dir) or not os.path.isdir(caption_dir):
+                continue
 
-                    print("Processing", caption_filepath)
-                    if not caption_filename.endswith(".json"):
+            for view in sorted(os.listdir(caption_dir)):
+                video_view_dir = os.path.join(video_dir, view)
+                caption_view_dir = os.path.join(caption_dir, view)
+
+                if not os.path.isdir(video_view_dir) or not os.path.isdir(
+                    caption_view_dir
+                ):
+                    continue
+
+                print(f"Processing {caption_view_dir} ...")
+
+                for json_file in os.listdir(caption_view_dir):
+                    if not json_file.endswith(".json"):
                         continue
-                    print("Processing", caption_filepath)
-                    with open(caption_filepath, "r") as f:
+
+                    json_filepath = os.path.join(caption_view_dir, json_file)
+                    # print("Processing", json_filepath)
+                    with open(json_filepath, "r") as f:
                         caption_data = json.load(f)
-                    
-                    video_filename = caption_data['video_name']
-                    video_filepath = os.path.join(vehicle_view_video_dir, video_filename)
-                    if video_filename.lower().endswith(".mp4"):
-                        video_filename = video_filename[:-4]
-                    fps = float(caption_data.get('fps', 30))
-                    duration = 0
-                    timestamps = []
-                    vehicle_sentences = []
-                    pedestrian_sentences = []
-                    events = caption_data.get('event_phase', [])
-                    for event in events:
-                        start_time = float(event['start_time'])
-                        end_time = float(event['end_time'])
-                        start = int(start_time * fps)
-                        end = int(end_time * fps)
-                        timestamps.append((start, end))
-                        vehicle_sentences.append(event['caption_vehicle'])
-                        pedestrian_sentences.append(event['caption_pedestrian'])
 
-                    
-                    pedestrian_data = {
-                        "duration": round(duration, 2),
-                        "fps": 1,
-                        "original_fps": round(fps, 2),
-                        "timestamps": timestamps,
-                        "sentences": pedestrian_sentences,
-                        "video_path": video_filepath,
-                    }
-                    vehicle_data = {
-                        "duration": round(duration, 2),
-                        "fps": 1,
-                        "original_fps": round(fps, 2),
-                        "timestamps": timestamps,
-                        "sentences": vehicle_sentences,
-                        "video_path": video_filepath,
-                    }
-                    split_annotation_data["pedestrian"][video_filename] = pedestrian_data
-                    split_annotation_data["vehicle"][video_filename] = vehicle_data
-            else:
-                for view in sorted(os.listdir(caption_dir)):
-                    video_view_dir = os.path.join(video_dir, view)
-                    caption_view_dir = os.path.join(caption_dir, view)
-                    
-                    for json_file in os.listdir(caption_view_dir):
-                        if not json_file.endswith(".json"):
+                    video_filenames = []
+                    if view.lower() == "overhead_view":
+                        video_filenames = caption_data["overhead_videos"]
+                    else:
+                        video_filenames.append(caption_data["vehicle_view"])
+
+                    for video_filename in video_filenames:
+                        video_filepath = os.path.join(video_view_dir, video_filename)
+                        if not video_filename.lower().endswith(".mp4"):
+                            print("Skipping", video_filepath)
                             continue
-                        
-                        json_filepath = os.path.join(caption_view_dir, json_file)
-                        # print("Processing", json_filepath)
-                        with open(json_filepath, "r") as f:
-                            caption_data = json.load(f)
-                        
-                        video_filenames = []
-                        if view.lower() == "overhead_view":
-                            video_filenames = caption_data['overhead_videos']
-                        else:
-                            video_filenames.append(caption_data['vehicle_view'])
 
-                        for video_filename in video_filenames:
-                            video_filepath = os.path.join(video_view_dir, video_filename)
-                            if not video_filename.lower().endswith(".mp4"):
-                                print("Skipping", video_filepath)
-                                continue
-                            
-                            # print("Processing", video_filepath)
-                            pedestrian_data, vehicle_data = convert_wts_to_youcook_format(
-                                video_filepath, json_filepath
-                            )
-                            pedestrian_data["video_path"] = video_filepath
-                            vehicle_data["video_path"] = video_filepath
-                            video_name = video_filename.split(".")[:-1]
-                            video_name = ".".join(video_name)
-                            split_annotation_data["pedestrian"][video_name] = pedestrian_data
-                            split_annotation_data["vehicle"][video_name] = vehicle_data
-        
-        for obj in ["pedestrian", "vehicle"]:
+                        pedestrian_data, vehicle_data = convert_wts_to_youcook_format(
+                            video_filepath, json_filepath
+                        )
+                        pedestrian_data["video_path"] = video_filepath
+                        vehicle_data["video_path"] = video_filepath
+
+                        video_name = video_filename.split(".")[:-1]
+                        video_name = ".".join(video_name)
+                        split_annotation_data["pedestrian"][
+                            video_name
+                        ] = pedestrian_data
+                        split_annotation_data["vehicle"][video_name] = vehicle_data
+
+        annotation_data[split] = split_annotation_data
+
+    # add val into train
+    if args.merge_val:
+        for video in annotation_data["val"]["pedestrian"]:
+            annotation_data["train"]["pedestrian"][video] = annotation_data["val"][
+                "pedestrian"
+            ][video]
+            annotation_data["train"]["vehicle"][video] = annotation_data["val"][
+                "vehicle"
+            ][video]
+
+    # for obj in ["pedestrian", "vehicle"]:
+    #     output_filepath = os.path.join(OUTPUT_DIR, f"{obj}_{split}.json")
+    #     with open(output_filepath, "w") as f:
+    #         json.dump(split_annotation_data[obj], f, indent=4)
+    for split in annotation_data:
+        for obj in annotation_data[split]:
             output_filepath = os.path.join(OUTPUT_DIR, f"{obj}_{split}.json")
             with open(output_filepath, "w") as f:
-                json.dump(split_annotation_data[obj], f, indent=4)
-        
-
-    # for split in sorted(os.listdir(VIDEOS_DIR)):
-    #     videos_split_dir = os.path.join(VIDEOS_DIR, split)
-    #     caption_split_dir = os.path.join(CAPTION_DIR, split)
-    #     # bbox_split_dir = os.path.join(BBOX_DIR, split)
-
-    #     split_annotation_data = {
-    #         "pedestrian": {},
-    #         "vehicle": {},
-    #     }
-
-    #     if not os.path.isdir(videos_split_dir):
-    #         continue
-
-    #     for video_folder in sorted(os.listdir(videos_split_dir)):
-    #         print(f"Processing {video_folder} ...")
-    #         video_dir = os.path.join(videos_split_dir, video_folder)
-    #         if not os.path.isdir(video_dir):
-    #             continue
-            
-    #         if video_folder == "normal_trimmed":
-    #             for normal_video_folder in sorted(os.listdir(video_dir)):
-    #                 normal_video_dir = os.path.join(video_dir, normal_video_folder)
-    #                 if not os.path.isdir(normal_video_dir):
-    #                     continue
-    #                 for normal_view in sorted(os.listdir(normal_video_dir)):
-    #                     normal_view_dir = os.path.join(normal_video_dir, normal_view)
-    #                     if not os.path.isdir(normal_view_dir):
-    #                         continue
-    #                     for normal_video_filename in sorted(os.listdir(normal_view_dir)):
-    #                         normal_video_filepath = os.path.join(normal_view_dir, normal_video_filename)
-    #                         if not normal_video_filename.lower().endswith(".mp4"):
-    #                             print("Skipping", normal_video_filepath)
-    #                             continue
-    #                         print("Processing", normal_video_filepath)
-    #                         caption_filename = normal_video_filename.split(".")[:-1]
-    #                         caption_filename = '.'.join(caption_filename)
-    #                         caption_filename += "_caption.json"
-    #                         caption_filepath = os.path.join(
-    #                             caption_split_dir, video_folder, normal_video_folder, normal_view, caption_filename
-    #                         )
-    #                         print("Caption file:", caption_filepath)
-    #                         pedestrian_data, vehicle_data = convert_wts_to_youcook_format(
-    #                             normal_video_filepath, caption_filepath
-    #                         )
-    #                         video_name = normal_video_filename.split(".")[:-1]
-    #                         video_name = ".".join(video_name)
-    #                         split_annotation_data["pedestrian"][normal_video_folder] = pedestrian_data
-    #                         split_annotation_data["vehicle"][normal_video_folder] = vehicle_data
-    #         else:
-    #             # continue
-    #             for view in sorted(os.listdir(video_dir)):
-    #                 view_dir = os.path.join(video_dir, view)
-    #                 if not os.path.isdir(view_dir):
-    #                     continue
-
-    #                 # if view.lower() == "overhead_view":
-    #                 #     is_pedestrian = True
-    #                 # else:
-    #                 #     is_pedestrian = False
-
-    #                 for video_filename in sorted(os.listdir(view_dir)):
-    #                     video_filepath = os.path.join(view_dir, video_filename)
-    #                     if not video_filename.lower().endswith(".mp4"):
-    #                         print("Skipping", video_filepath)
-    #                         continue
-
-    #                     print("Processing", video_filepath)
-    #                     caption_filename = video_filename.split(".")[:-1]
-    #                     caption_filename = '.'.join(caption_filename)
-    #                     caption_filename = caption_filename.split("_")[:4]
-    #                     caption_filename += ["caption"]
-    #                     caption_filename = "_".join(caption_filename) + ".json"
-    #                     caption_filepath = os.path.join(
-    #                         caption_split_dir, video_folder, view, caption_filename
-    #                     )
-    #                     print("Caption file:", caption_filepath)
-
-    #                     pedestrian_data, vehicle_data = convert_wts_to_youcook_format(
-    #                         video_filepath, caption_filepath
-    #                     )
-
-    #                     video_name = video_filename.split(".")[:-1]
-    #                     video_name = ".".join(video_name)
-    #                     split_annotation_data["pedestrian"][video_folder] = pedestrian_data
-    #                     split_annotation_data["vehicle"][video_folder] = vehicle_data
-    #         #         break
-    #         #     break
-
-    #         # split_annotation_data["pedestrian"][video_folder] = perdestrian_data
-    #         # split_annotation_data["vehicle"][video_folder] = vehicle_data
-
-        for obj in ["pedestrian", "vehicle"]:
-            output_filepath = os.path.join(OUTPUT_DIR, f"{obj}_{split}.json")
-            with open(output_filepath, "w") as f:
-                json.dump(split_annotation_data[obj], f, indent=4)
+                json.dump(annotation_data[split][obj], f, indent=4)
