@@ -776,7 +776,7 @@ class LazySupervisedDataset(Dataset):
 
                 video_paths = [os.path.join(video_folder, file) for file in video_files]
                 image = [video_processor(path, return_tensors="pt")["pixel_values"][0] for path in video_paths]
-                image_attention_masks = [torch.ones(i.shape[1], dtype=torch.bool) for i in image]
+                image_attention_masks = [torch.ones(img.shape[1], dtype=torch.bool) for img in image]
 
                 assert len(image) > 0, f"Cannot open some videos with id: {sources[0]['id']}"
                 for _ in range(len(image), NUM_CAMERA_VIEWS):
