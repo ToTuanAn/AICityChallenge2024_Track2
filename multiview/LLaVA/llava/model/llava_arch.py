@@ -40,6 +40,7 @@ class LlavaMetaModel:
             
             if getattr(config, "mm_video_tower"):
                 self.video_tower = build_video_tower(config, delay_load=True)
+                print(f"DEBUG --- {self.video_tower.config.vision_config.num_frames}")
                 self.multiview_ensembler = build_multiview_ensembler(NUM_PATCHES_POOLED * HIDDEN_SIZE_POOLED, self.video_tower.config.vision_config.num_frames)
             
             self.mm_projector = build_vision_projector(config)
