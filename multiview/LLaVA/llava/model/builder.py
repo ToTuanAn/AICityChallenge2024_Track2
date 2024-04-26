@@ -86,7 +86,7 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
 
             model.load_state_dict(adapter_state_dict, strict=False)
 
-            print(model.mm_projector[0].weight.shape)
+            print(model.model.mm_projector[0].weight.shape)
  
             print('Loading LoRA weights...')
             model = PeftModel.from_pretrained(model, model_path)
