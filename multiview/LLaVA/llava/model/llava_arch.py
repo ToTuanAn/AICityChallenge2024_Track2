@@ -34,6 +34,10 @@ class LlavaMetaModel:
         super(LlavaMetaModel, self).__init__(config)
 
         if hasattr(config, "mm_vision_tower") or hasattr(config, "mm_video_tower"):
+            self.mm_projector = build_vision_projector(config)
+
+            print("DEBUG --- mm_projector", self.mm_projector)
+
             if getattr(config, "mm_vision_tower"):
                 self.vision_tower = build_vision_tower(config, delay_load=True)
                 self.multiview_ensembler = build_multiview_ensembler(NUM_PATCHES_POOLED * HIDDEN_SIZE_POOLED, 1)
@@ -44,8 +48,9 @@ class LlavaMetaModel:
                 print(f"DEBUG --- {NUM_PATCHES_POOLED}")
                 print(f"DEBUG --- {HIDDEN_SIZE_POOLED}")
                 self.multiview_ensembler = build_multiview_ensembler(NUM_PATCHES_POOLED * HIDDEN_SIZE_POOLED, self.video_tower.config.vision_config.num_frames)
+
+                print(self.multiview_ensembler)
             
-            self.mm_projector = build_vision_projector(config)
             self.pooling = nn.AdaptiveAvgPool2d((NUM_PATCHES_POOLED, HIDDEN_SIZE_POOLED)) 
     
             # ???
