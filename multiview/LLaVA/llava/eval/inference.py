@@ -188,6 +188,7 @@ if __name__ == "__main__":
     parser.add_argument("--model-path", type=str, default="facebook/opt-350m")
     parser.add_argument("--model-base", type=str, default="lmsys/vicuna-7b-v1.5")
     parser.add_argument("--data-path", type=str, default=None)
+    parser.add_argument("--output-path", type=str, default=None)
     parser.add_argument("--video-folder", type=str, default=None)
     parser.add_argument("--temperature", type=float, default=0.2)
     parser.add_argument("--top_p", type=float, default=None)
