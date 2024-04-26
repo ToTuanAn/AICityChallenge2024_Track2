@@ -40,7 +40,7 @@ class LlavaMetaModel:
             
             if getattr(config, "mm_video_tower"):
                 self.video_tower = build_video_tower(config, delay_load=True)
-                self.multiview_ensembler = build_multiview_ensembler(NUM_PATCHES_POOLED * HIDDEN_SIZE_POOLED, self.video_tower.config.num_frames)
+                self.multiview_ensembler = build_multiview_ensembler(NUM_PATCHES_POOLED * HIDDEN_SIZE_POOLED, self.video_tower.config.vision_config.num_frames)
             
             self.mm_projector = build_vision_projector(config)
             self.pooling = nn.AdaptiveAvgPool2d((NUM_PATCHES_POOLED, HIDDEN_SIZE_POOLED)) 
@@ -134,7 +134,7 @@ class LlavaMetaModel:
                                              getattr(video_tower, "hidden_size", -1))
             num_patches = max(getattr(vision_tower, "num_patches", -1),
                               getattr(video_tower, "num_patches", -1))
-        num_frames = video_tower.config.num_frames # bruh
+        num_frames = video_tower.config.vision_config.num_frames # bruh
         ###########################################################################################
             
         def get_w(weights, keyword):
