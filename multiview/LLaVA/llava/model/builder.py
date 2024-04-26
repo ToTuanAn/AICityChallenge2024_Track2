@@ -79,6 +79,11 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
             adapter_state_dict = {**mm_projector_state_dict, **multiview_ensembler_state_dict}
             adapter_state_dict = {(k[11:] if k.startswith('base_model.') else k): v for k, v in adapter_state_dict.items()}
             adapter_state_dict = {(k[6:] if k.startswith('model.model.') else k): v for k, v in adapter_state_dict.items()}
+            
+            for key in adapter_state_dict:
+                print(f"{key} --- {adapter_state_dict[key].shape}")
+            print(model.mm_projector.0.weight.shape)
+
             model.load_state_dict(adapter_state_dict, strict=False)
  
             print('Loading LoRA weights...')
