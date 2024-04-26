@@ -34,11 +34,11 @@ class LlavaMetaModel:
         super(LlavaMetaModel, self).__init__(config)
 
         if hasattr(config, "mm_vision_tower") or hasattr(config, "mm_video_tower"):
-            if hasattr(config, "mm_vision_tower"):
+            if getattr(config, "mm_vision_tower"):
                 self.vision_tower = build_vision_tower(config, delay_load=True)
                 self.multiview_ensembler = build_multiview_ensembler(NUM_PATCHES_POOLED * HIDDEN_SIZE_POOLED, 1)
             
-            if hasattr(config, "mm_video_tower"):
+            if getattr(config, "mm_video_tower"):
                 self.video_tower = build_video_tower(config, delay_load=True)
                 self.multiview_ensembler = build_multiview_ensembler(NUM_PATCHES_POOLED * HIDDEN_SIZE_POOLED, self.video_tower.config.num_frames)
             
