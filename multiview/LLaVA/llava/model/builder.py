@@ -75,7 +75,7 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
             print('Loading mm_projector and multiview_ensembler weights...')
                 
             mm_projector_state_dict = load_from_hf(model_path, "mm_projector.bin")
-            multiview_ensembler_state_dict = load_from_hf(model_path, "multiview_ensembler.bin")
+            multiview_ensembler_state_dict = load_from_hf(model_path, "non_lora_trainables.bin")
                     
             adapter_state_dict = {**mm_projector_state_dict, **multiview_ensembler_state_dict}
             adapter_state_dict = {(k[11:] if k.startswith('base_model.') else k): v for k, v in adapter_state_dict.items()}
@@ -85,7 +85,7 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
                 print(f"{key} --- {adapter_state_dict[key].shape}")
             print(model.model.mm_projector[0].weight.shape)
 
-            model.load_state_dict(adapter_state_dict, strict=False)
+            model.load_state_dict(adapter_state_dict, strict=True)
 
             print(model.model.mm_projector[0].weight.shape)
 
