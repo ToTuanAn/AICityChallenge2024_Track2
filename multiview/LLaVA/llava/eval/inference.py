@@ -20,21 +20,6 @@ from llava.mm_utils import (
 )
 
 
-# def eval_model(args):
-#     #Model
-#     disable_torch_init()
-
-#     model_name = get_model_name_from_path(args.model_path)
-#     tokenizer, model, video_processor, context_len = load_pretrained_model(
-#         args.model_path, args.model_base, model_name
-#     )
-
-
-
-# model_path = "tt1225/aic24-track2-multiview-videollava-7b-lora"
-# model_base = "lmsys/vicuna-7b-v1.5"
-
-
 def preprocess_multimodal(sources: Sequence[str], config) -> Dict:
     for source in sources:
         for sentence in source:
@@ -105,28 +90,25 @@ class LazySupervisedDataset(Dataset):
 
             video_files = self.list_data_dict[i]["videos"]
             video_paths = [os.path.join(self.video_folder, file) for file in video_files]
-            image = [self.video_processor(path, return_tensors="pt")["pixel_values"][0] for path in video_paths]
-            image_attention_masks = [torch.ones(img.shape[1], dtype=torch.bool) for img in image]
+            images = [self.video_processor(path, return_tensors="pt")["pixel_values"][0] for path in video_paths]
+            image_attention_masks = [torch.ones(image.shape[1], dtype=torch.bool) for image in images]
 
-            assert len(image) > 0, f"Cannot open some videos with id: {sources[0]['id']}"
-            for _ in range(len(image), NUM_CAMERA_VIEWS):
-                image.append(torch.zeros(*image[0].shape))
-                image_attention_masks.append(torch.zeros(image[0].shape[1], dtype=torch.bool))
+            assert len(images) > 0, f"Cannot open some videos with id: {sources[0]['id']}"
+            for _ in range(len(images), NUM_CAMERA_VIEWS):
+                images.append(torch.zeros(*images[0].shape))
+                image_attention_masks.append(torch.zeros(images[0].shape[1], dtype=torch.bool))
 
             sources = preprocess_multimodal(copy.deepcopy([s["conversations"] for s in sources]), self.model_config)
 
             data_dict = preprocess_v1(sources, self.tokenizer)  
 
-            print("=" * 100)
-            print(data_dict["input_ids"].shape)              
-            
             if isinstance(i, int):
                 data_dict = dict(input_ids=data_dict["input_ids"][0])
 
             if "videos" in self.list_data_dict[i]:
                 data_dict["video_id"] = video_id
                 data_dict["segment_id"] = segment_id
-                data_dict["image"] = image
+                data_dict["images"] = images
                 data_dict["image_attention_masks"] = image_attention_masks
 
             return data_dict 
@@ -150,20 +132,17 @@ def inference(args):
     wts_dataloader = DataLoader(wts_dataset)
 
     with torch.inference_mode():
-        for i, sample in enumerate(wts_dataloader):
-            print(sample)
-
+        for sample in wts_dataloader:
             video_id = sample["video_id"]
             segment_id = sample["segment_id"]
             input_ids = sample["input_ids"]
-            image = sample["image"]
+            images = sample["images"]
             image_attention_masks = sample["image_attention_masks"]
 
-
-
             output_ids = model.generate(
-                input_ids,
-                images=image,
+                inputs=input_ids,
+                images=images,
+                image_attention_masks=image_attention_masks,
                 do_sample=True if args.temperature > 0 else False,
                 temperature=args.temperature,
                 top_p=args.top_p,
