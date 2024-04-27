@@ -133,7 +133,7 @@ def inference(args):
     results = {}
     model_name = get_model_name_from_path(args.model_path)
     tokenizer, model, video_processor, context_len = load_pretrained_model(
-        args.model_path, args.model_base, model_name, load_4bit=True
+        args.model_path, args.model_base, model_name
     )
 
     wts_dataset = LazySupervisedDataset(data_path=args.data_path,
