@@ -110,6 +110,7 @@ def load_pretrained_model(model_path, model_base, model_name, offload_folder, lo
  
             print('Loading LoRA weights...')
             model = PeftModel.from_pretrained(model, model_path, offload_folder=offload_folder)
+            model.to(device)
 
             print(model)
             print('Merging LoRA weights...')
