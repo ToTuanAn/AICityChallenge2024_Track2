@@ -164,6 +164,7 @@ def inference(args):
 
     with torch.inference_mode():
         for sample in wts_dataloader:
+            print(sample["input_ids"])
             for key in sample:
                 print(f"DEBUG --- {key}: {len(sample[key])}")
                 if key == "input_ids":
