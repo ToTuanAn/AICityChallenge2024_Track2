@@ -119,8 +119,8 @@ def DataCollatorForSupervisedDataset(instances: Sequence[Dict]):
 
     batch = dict(input_ids=input_ids)
     
-    if all("image" in instance and instance["image"] for instance in instances):
-        list_images = [instance["image"] for instance in instances]
+    if all("images" in instance and instance["images"] for instance in instances):
+        list_images = [instance["images"] for instance in instances]
 
         new_list_images = []
         for images in list_images:
