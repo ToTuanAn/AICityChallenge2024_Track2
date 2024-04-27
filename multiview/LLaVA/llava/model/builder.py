@@ -33,7 +33,7 @@ def load_from_hf(repo_id, filename, subfolder=None):
     return torch.load(cache_file, map_location='cpu')
 
 
-def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, load_4bit=False, device_map="auto", device="cuda", use_flash_attn=False, **kwargs):
+def load_pretrained_model(model_path, model_base, model_name, offload_folder, load_8bit=False, load_4bit=False, device_map="auto", device="cuda", use_flash_attn=False, **kwargs):
     kwargs = {"device_map": device_map, **kwargs}
 
     if device != "cuda":
@@ -109,7 +109,7 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
             # print(model.model.mm_projector[0].weight.shape)
  
             print('Loading LoRA weights...')
-            model = PeftModel.from_pretrained(model, model_path)
+            model = PeftModel.from_pretrained(model, model_path, offload_folder=offload_folder)
 
             print(model)
             print('Merging LoRA weights...')

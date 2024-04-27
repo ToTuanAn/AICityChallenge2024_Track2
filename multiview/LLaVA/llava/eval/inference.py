@@ -165,7 +165,7 @@ def inference(args):
     results = {}
     model_name = get_model_name_from_path(args.model_path)
     tokenizer, model, video_processor, context_len = load_pretrained_model(
-        args.model_path, args.model_base, model_name, device="cpu"
+        args.model_path, args.model_base, model_name, args.offload_folder, device="cpu"
     )
 
     wts_dataset = LazySupervisedDataset(data_path=args.data_path,
@@ -217,6 +217,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--model-path", type=str, default="facebook/opt-350m")
     parser.add_argument("--model-base", type=str, default="lmsys/vicuna-7b-v1.5")
+    parser.add_argument("--offload-folder", type=str, default=None)  
     parser.add_argument("--data-path", type=str, default=None)
     parser.add_argument("--output-path", type=str, default=None)
     parser.add_argument("--video-folder", type=str, default=None)
