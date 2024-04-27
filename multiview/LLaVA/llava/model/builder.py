@@ -134,11 +134,8 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
 
         video_tower = model.get_video_tower()
         if not video_tower.is_loaded:
-            video_tower.load_model(device_map=device_map)
-        if device_map != 'auto':
-            video_tower.to(device=device_map, dtype=torch.float16)
-        else:
-             video_tower.to(dtype=torch.float16)
+            video_tower.load_model()
+        video_tower.to(device=device_map, dtype=torch.float16)
         video_processor = video_tower.video_processor
     
     if hasattr(model.config, "max_sequence_length"):
