@@ -101,6 +101,9 @@ class LazySupervisedDataset(Dataset):
             video_files = self.list_data_dict[i]["videos"]
             video_paths = [os.path.join(self.video_folder, file) for file in video_files]
             image = [self.video_processor(path, return_tensors="pt") for path in video_paths]
+            for img in image:
+                print("=" * 100)
+                print(img)
             image_attention_masks = [torch.ones(img.shape[1], dtype=torch.bool) for img in image]
 
             assert len(image) > 0, f"Cannot open some videos with id: {sources[0]['id']}"
@@ -146,7 +149,7 @@ def inference(args):
     with torch.inference_mode():
         for i, sample in enumerate(wts_dataloader):
             print(sample)
-            
+
             video_id = sample["video_id"]
             segment_id = sample["segment_id"]
             input_ids = sample["input_ids"]
