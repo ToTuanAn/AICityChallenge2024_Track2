@@ -145,6 +145,8 @@ def inference(args):
 
     with torch.inference_mode():
         for i, sample in enumerate(wts_dataloader):
+            print(sample)
+            
             video_id = sample["video_id"]
             segment_id = sample["segment_id"]
             input_ids = sample["input_ids"]
