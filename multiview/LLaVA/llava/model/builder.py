@@ -113,7 +113,7 @@ def load_pretrained_model(model_path, model_base, model_name, offload_folder, lo
 
             print(model)
             print('Merging LoRA weights...')
-            model = model.merge_and_unload()
+            model = model.merge_and_unload(progressbar=True)
             print('Model is loaded...')
         else:
             raise NotImplementedError
