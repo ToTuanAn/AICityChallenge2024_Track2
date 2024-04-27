@@ -33,11 +33,11 @@ def load_from_hf(repo_id, filename, subfolder=None):
     return torch.load(cache_file, map_location='cpu')
 
 
-def load_pretrained_model(model_path, model_base, model_name, offload_folder, load_8bit=False, load_4bit=False, device_map="auto", device="cuda", use_flash_attn=False, **kwargs):
+def load_pretrained_model(model_path, model_base, model_name, offload_folder, load_8bit=False, load_4bit=False, device_map="cpu", device="cuda", use_flash_attn=False, **kwargs):
     kwargs = {"device_map": device_map, **kwargs}
 
-    if device != "cuda":
-        kwargs['device_map'] = {"": device}
+    # if device != "cuda":
+    #     kwargs['device_map'] = {"": device}
 
     if load_8bit:
         kwargs['load_in_8bit'] = True
