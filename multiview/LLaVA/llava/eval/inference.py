@@ -98,7 +98,7 @@ class LazySupervisedDataset(Dataset):
             source_id = self.list_data_dict[i]["id"]
             video_id, segment_id = source_id.rsplit("_", 1)
 
-            video_files = self.list_data_dict[i]["video"]
+            video_files = self.list_data_dict[i]["videos"]
             video_paths = [os.path.join(self.video_folder, file) for file in video_files]
             image = [self.video_processor(path, return_tensors="pt") for path in video_paths]
             image_attention_masks = [torch.ones(img.shape[1], dtype=torch.bool) for img in image]
