@@ -165,6 +165,9 @@ def inference(args):
     with torch.inference_mode():
         for sample in wts_dataloader:
             print("DEBUG", sample["input_ids"])
+            print("DEBUG", len(sample["images"]))
+            for image in sample["images"]:
+                print(image.shape)
             # for key in sample:
             #     print(f"DEBUG --- {key}: {len(sample[key])}")
             #     if key == "input_ids":
