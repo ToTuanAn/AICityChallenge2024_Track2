@@ -52,7 +52,7 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
             bnb_4bit_quant_type='nf4'
         )
     else:
-        kwargs['torch_dtype'] = torch.float16
+        kwargs['torch_dtype'] = torch.float32
 
     print(f"DEBUG --- kwargs['device_map']:", 'load_in_8bit' in kwargs)
 
