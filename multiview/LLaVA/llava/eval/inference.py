@@ -135,8 +135,10 @@ def inference(args):
         for sample in wts_dataloader:
             for key in sample:
                 print(f"DEBUG --- {key}: {len(sample[key])}")
-                if key in ["input_ids", "images", "image_attention_masks"]:
+                if key == "input_ids":
                     print(sample[key].shape)
+                elif key in ["images", "image_attention_masks"]:
+                    print(len(sample[key]))
             video_id = sample["video_id"][0]
             segment_id = sample["segment_id"][0]
             input_ids = sample["input_ids"][0]
