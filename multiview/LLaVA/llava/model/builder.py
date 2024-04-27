@@ -82,10 +82,26 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
             adapter_state_dict = {(k[6:] if k.startswith('model.model.') else k): v for k, v in adapter_state_dict.items()}
             
             for key in adapter_state_dict:
-                print(f"{key} --- {adapter_state_dict[key].shape}")
+            print(f"{key} --- {adapter_state_dict[key].shape}")
+            print(model.model.multiview_ensembler.view_position_embedding.weight.shape)
+            print(model.model.multiview_ensembler.frame_position_embedding.weight.shape)
+            print(model.model.multiview_ensembler.attention.qkv_projection.weight.shape)
+            print(model.model.multiview_ensembler.attention.qkv_projection.bias.shape)
+            print(model.model.multiview_ensembler.attention.o_projection.weight.shape)
+            print(model.model.multiview_ensembler.attention.o_projection.bias.shape)
+            print(model.model.multiview_ensembler.view_merger.weight.shape)
+            print(model.model.multiview_ensembler.view_merger.bias.shape)
+            print(model.model.multiview_ensembler.layer_norm1.weight.shape)
+            print(model.model.multiview_ensembler.layer_norm1.bias.shape)
+            print(model.model.multiview_ensembler.feedforward.fc1.weight.shape)
+            print(model.model.multiview_ensembler.feedforward.fc1.bias.shape)
+            print(model.model.multiview_ensembler.feedforward.fc2.weight.shape)
+            print(model.model.multiview_ensembler.feedforward.fc2.bias.shape)
+            print(model.model.multiview_ensembler.layer_norm2.weight.shape)
+            print(model.model.multiview_ensembler.layer_norm2.bias.shape)
             print(model.model.mm_projector[0].weight.shape)
 
-            model.load_state_dict(adapter_state_dict, strict=True)
+            model.load_state_dict(adapter_state_dict, strict=False)
 
             print(model.model.mm_projector[0].weight.shape)
 
