@@ -887,6 +887,9 @@ def train(attn_implementation=None):
     model_args, data_args, training_args = parser.parse_args_into_dataclasses()
     local_rank = training_args.local_rank
     compute_dtype = (torch.float16 if training_args.fp16 else (torch.bfloat16 if training_args.bf16 else torch.float32))
+    
+    # EBUG
+    print("DEBUG --- compute_dtype:", compute_dtype)
 
     bnb_model_from_pretrained_args = {}
     if training_args.bits in [4, 8]:
@@ -928,7 +931,8 @@ def train(attn_implementation=None):
                 model_args.model_name_or_path,
                 cache_dir=training_args.cache_dir,
                 attn_implementation=attn_implementation,
-                torch_dtype=(torch.bfloat16 if training_args.bf16 else None),
+                # torch_dtype=(torch.bfloat16 if training_args.bf16 else None),
+                torch_dtype=(torch.float16 if training_args.fp16 else (torch.bfloat16 if training_args.bf16 else None)) # avoid torch.float32
                 **bnb_model_from_pretrained_args
             )
     else:
@@ -936,7 +940,8 @@ def train(attn_implementation=None):
             model_args.model_name_or_path,
             cache_dir=training_args.cache_dir,
             attn_implementation=attn_implementation,
-            torch_dtype=(torch.bfloat16 if training_args.bf16 else None),
+            # torch_dtype=(torch.bfloat16 if training_args.bf16 else None),
+            torch_dtype=(torch.float16 if training_args.fp16 else (torch.bfloat16 if training_args.bf16 else None)) # avoid torch.float32
             **bnb_model_from_pretrained_args
         )
     model.config.use_cache = False
@@ -946,7 +951,9 @@ def train(attn_implementation=None):
 
     if training_args.bits in [4, 8]:
         from peft import prepare_model_for_kbit_training
-        model.config.torch_dtype=(torch.float32 if training_args.fp16 else (torch.bfloat16 if training_args.bf16 else torch.float32))
+        # original LLaVA code has bug?
+        # model.config.torch_dtype=(torch.float32 if training_args.fp16 else (torch.bfloat16 if training_args.bf16 else torch.float32))
+        model.config.torch_dtype=(torch.float16 if training_args.fp16 else (torch.bfloat16 if training_args.bf16 else torch.float32))
         model = prepare_model_for_kbit_training(model, use_gradient_checkpointing=training_args.gradient_checkpointing)
 
     if training_args.gradient_checkpointing:
