@@ -115,9 +115,13 @@ class LazySupervisedDataset(Dataset):
         
 
 def DataCollatorForSupervisedDataset(instances: Sequence[Dict]):
+    video_id = [instance["video_id"] for instance in instances]
+    segment_id = [instance["segment_id"] for instance in instances]
     input_ids = [instance["input_ids"] for instance in instances]
 
-    batch = dict(input_ids=input_ids)
+    batch = dict(video_id = video_id,
+                 segment_id = segment_id,
+                 input_ids=input_ids,)
     
     if all("images" in instance and instance["images"] for instance in instances):
         list_images = [instance["images"] for instance in instances]
@@ -164,21 +168,11 @@ def inference(args):
 
     with torch.inference_mode():
         for sample in wts_dataloader:
-            print("DEBUG", sample["input_ids"])
-            print("DEBUG", len(sample["images"]))
-            for image in sample["images"]:
-                print(image.shape)
-            # for key in sample:
-            #     print(f"DEBUG --- {key}: {len(sample[key])}")
-            #     if key == "input_ids":
-            #         print(sample[key].shape)
-            #     elif key in ["images", "image_attention_masks"]:
-            #         print(len(sample[key]))
-            video_id = sample["video_id"][0]
-            segment_id = sample["segment_id"][0]
-            input_ids = sample["input_ids"][0]
-            images = sample["images"][0]
-            image_attention_masks = sample["image_attention_masks"][0]
+            video_id = sample["video_id"]
+            segment_id = sample["segment_id"]
+            input_ids = sample["input_ids"]
+            images = sample["images"]
+            image_attention_masks = sample["image_attention_masks"]
 
             output_ids = model.generate(
                 inputs=input_ids,
