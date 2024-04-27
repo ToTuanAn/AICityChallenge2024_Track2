@@ -76,7 +76,8 @@ class LazySupervisedDataset(Dataset):
     def __init__(self, data_path: str,
                  video_folder: str,
                  tokenizer: transformers.PreTrainedTokenizer,
-                 video_processor
+                 video_processor,
+                 model_config: transformers.PretrainedConfig,
                  ):
         super(LazySupervisedDataset, self).__init__()
         self.list_data_dict = json.load(open(data_path, "r"))
@@ -84,6 +85,7 @@ class LazySupervisedDataset(Dataset):
     
         self.tokenizer = tokenizer
         self.video_processor = video_processor
+        self.model_config = model_config
 
     def __len__(self):
         return len(self.list_data_dict)
@@ -100,10 +102,7 @@ class LazySupervisedDataset(Dataset):
 
             video_files = self.list_data_dict[i]["videos"]
             video_paths = [os.path.join(self.video_folder, file) for file in video_files]
-            image = [self.video_processor(path, return_tensors="pt")["pixel_values"] for path in video_paths]
-            for img in image:
-                print("=" * 100)
-                print(img.shape)
+            image = [self.video_processor(path, return_tensors="pt")["pixel_values"][0] for path in video_paths]
             image_attention_masks = [torch.ones(img.shape[1], dtype=torch.bool) for img in image]
 
             assert len(image) > 0, f"Cannot open some videos with id: {sources[0]['id']}"
@@ -111,12 +110,12 @@ class LazySupervisedDataset(Dataset):
                 image.append(torch.zeros(*image[0].shape))
                 image_attention_masks.append(torch.zeros(image[0].shape[1], dtype=torch.bool))
 
-            sources = preprocess_multimodal(copy.deepcopy([s["conversationms"] for s in sources]),
-                                            self.data_args)
+            sources = preprocess_multimodal(copy.deepcopy([s["conversations"] for s in sources]), self.model_config)
 
-            data_dict = preprocess_v1(sources,
-                                      self.tokenizer,
-                                      has_image=True)                
+            data_dict = preprocess_v1(sources, self.tokenizer)  
+
+            print("=" * 100)
+            print(data_dict["input_ids"].shape)              
             
             if isinstance(i, int):
                 data_dict = dict(input_ids=data_dict["input_ids"][0])
@@ -142,7 +141,8 @@ def inference(args):
     wts_dataset = LazySupervisedDataset(data_path=args.data_path,
                                         video_folder=args.video_folder,
                                         tokenizer=tokenizer,
-                                        video_processor=video_processor)
+                                        video_processor=video_processor,
+                                        model_config=model.config)
     
     wts_dataloader = DataLoader(wts_dataset)
 
