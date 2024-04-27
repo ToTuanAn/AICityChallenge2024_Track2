@@ -64,10 +64,13 @@ def preprocess_v1(sources,
         for j, sentence in enumerate(source):
             role = roles[sentence["from"]]
             assert role == conv.roles[j % 2], f"{i}"
-            conv.append_message(role, sentence["value"])
+            if role == conv.roles[0]:
+                conv.append_message(role, sentence["value"])
+            elif role == conv.roles[1]:
+                conv.append_message(role, None)
         conversations.append(conv.get_prompt())
 
-    input_ids = torch.stack([tokenizer_image_token(prompt, tokenizer, return_tensors="pt")] for prompt in conversations)
+    input_ids = torch.stack([tokenizer_image_token(prompt, tokenizer, return_tensors="pt") for prompt in conversations])
 
     return dict(input_ids=input_ids)
 
