@@ -82,7 +82,7 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
             adapter_state_dict = {(k[6:] if k.startswith('model.model.') else k): v for k, v in adapter_state_dict.items()}
             
             for key in adapter_state_dict:
-            print(f"{key} --- {adapter_state_dict[key].shape}")
+                print(f"{key} --- {adapter_state_dict[key].shape}")
             print(model.model.multiview_ensembler.view_position_embedding.weight.shape)
             print(model.model.multiview_ensembler.frame_position_embedding.weight.shape)
             print(model.model.multiview_ensembler.attention.qkv_projection.weight.shape)
