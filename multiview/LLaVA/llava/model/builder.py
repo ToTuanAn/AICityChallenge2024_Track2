@@ -110,6 +110,8 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
  
             print('Loading LoRA weights...')
             model = PeftModel.from_pretrained(model, model_path)
+
+            print(model)
             print('Merging LoRA weights...')
             model = model.merge_and_unload()
             print('Model is loaded...')
