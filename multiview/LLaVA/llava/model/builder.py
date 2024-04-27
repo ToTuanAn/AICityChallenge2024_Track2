@@ -39,7 +39,7 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
     if device != "cuda":
         kwargs['device_map'] = {"": device}
 
-    print(kwargs['device_map'])
+    print(f"DEBUG --- kwargs['device_map']:", kwargs['device_map'])
 
     if load_8bit:
         kwargs['load_in_8bit'] = True
@@ -67,7 +67,6 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
 
 
             print("DEBUG --- model", model)
-            print(f"DEBUG --- {model.model.mm_projector[0].weight.shape}")
             token_num, tokem_dim = model.lm_head.out_features, model.lm_head.in_features
             if model.lm_head.weight.shape[0] != token_num:
                 print("DEBUG --- lm_head empty")
