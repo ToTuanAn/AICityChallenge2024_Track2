@@ -940,8 +940,7 @@ def train(attn_implementation=None):
             model_args.model_name_or_path,
             cache_dir=training_args.cache_dir,
             attn_implementation=attn_implementation,
-            # torch_dtype=(torch.bfloat16 if training_args.bf16 else None),
-            torch_dtype=(torch.float16 if training_args.fp16 else (torch.bfloat16 if training_args.bf16 else None)) # avoid torch.float32
+            torch_dtype=(torch.bfloat16 if training_args.bf16 else None),
             **bnb_model_from_pretrained_args
         )
     model.config.use_cache = False

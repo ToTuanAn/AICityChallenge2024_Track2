@@ -60,21 +60,17 @@ def load_pretrained_model(model_path, model_base, model_name, offload_folder, lo
             from llava.model.language_model.llava_llama import LlavaConfig
             lora_cfg_pretrained = LlavaConfig.from_pretrained(model_path)
             tokenizer = AutoTokenizer.from_pretrained(model_base, use_fast=False)
+            
             print('Loading LLaVA from base model...')
             model = LlavaLlamaForCausalLM.from_pretrained(model_base, low_cpu_mem_usage=True, config=lora_cfg_pretrained, **kwargs)
             model.config.use_cache = False
 
-            print("DEBUG --- model", model)
             token_num, tokem_dim = model.lm_head.out_features, model.lm_head.in_features
-            print(token_num)
-            print(tokem_dim)
-            print(model.lm_head.weight.shape)
             if model.lm_head.weight.shape[0] != token_num:
                 print("DEBUG --- lm_head empty")
                 model.lm_head.weight = torch.nn.Parameter(torch.empty(token_num, tokem_dim, device=model.device, dtype=model.dtype))
                 model.model.embed_tokens.weight = torch.nn.Parameter(torch.empty(token_num, tokem_dim, device=model.device, dtype=model.dtype))
-            print(model.lm_head.weight.shape)
-
+        
             print('Loading mm_projector and multiview_ensembler weights...')
                 
             mm_projector_state_dict = load_from_hf(model_path, "mm_projector.bin")
@@ -111,7 +107,6 @@ def load_pretrained_model(model_path, model_base, model_name, offload_folder, lo
             print('Loading LoRA weights...')
             model = PeftModel.from_pretrained(model, model_path, offload_folder=offload_folder)
 
-            print(model)
             print('Merging LoRA weights...')
             model = model.merge_and_unload(progressbar=True)
             print('Model is loaded...')
