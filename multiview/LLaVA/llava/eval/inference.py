@@ -13,14 +13,16 @@ import transformers
 from llava.utils import disable_torch_init
 from llava import conversation as conversation_lib
 from llava.model.builder import load_pretrained_model
-from llava.constants import DEFAULT_VIDEO_TOKEN, MAX_VIDEO_LENGTH, DEFAULT_VID_START_TOKEN, DEFAULT_VID_END_TOKEN, NUM_CAMERA_VIEWS
+from llava.constants import DEFAULT_IMAGE_TOKEN, DEFAULT_VIDEO_TOKEN, DEFAULT_VID_START_TOKEN, DEFAULT_VID_END_TOKEN, \
+                            MAX_VIDEO_LENGTH, NUM_CAMERA_VIEWS, IGNORE_INDEX
 from llava.mm_utils import (
     tokenizer_image_token,
     get_model_name_from_path
 )
 
 
-def preprocess_multimodal(sources: Sequence[str], config) -> Dict:
+def preprocess_multimodal(sources: Sequence[str],
+                          config: transformers.PretrainedConfig) -> Dict:
     for source in sources:
         for sentence in source:
             if sentence["value"].startswith(DEFAULT_VIDEO_TOKEN):
@@ -28,7 +30,7 @@ def preprocess_multimodal(sources: Sequence[str], config) -> Dict:
                 if num_video_tokens > MAX_VIDEO_LENGTH:
                     sentence["value"].replace(DEFAULT_VIDEO_TOKEN * num_video_tokens, DEFAULT_VIDEO_TOKEN * MAX_VIDEO_LENGTH)
 
-            vid_replace_token = DEFAULT_VIDEO_TOKEN * MAX_VIDEO_LENGTH
+            vid_replace_token = DEFAULT_IMAGE_TOKEN * MAX_VIDEO_LENGTH
             if config.mm_use_im_start_end:
                 vid_replace_token = DEFAULT_VID_START_TOKEN + vid_replace_token + DEFAULT_VID_END_TOKEN
             sentence["value"] = sentence["value"].replace(DEFAULT_VIDEO_TOKEN, vid_replace_token)
@@ -114,28 +116,36 @@ class LazySupervisedDataset(Dataset):
             return data_dict 
         
 
-def DataCollatorForSupervisedDataset(instances: Sequence[Dict]):
-    video_id = [instance["video_id"] for instance in instances]
-    segment_id = [instance["segment_id"] for instance in instances]
-    input_ids = [instance["input_ids"] for instance in instances]
+@dataclass
+class DataCollatorForSupervisedDataset(object):
+    tokenizer: transformers.PreTrainedTokenizer
 
-    batch = dict(video_id = video_id,
-                 segment_id = segment_id,
-                 input_ids=input_ids,)
-    
-    if all("images" in instance and instance["images"] for instance in instances):
-        list_images = [instance["images"] for instance in instances]
+    def __call__(self, instances: Sequence[Dict]) -> Dict[str, torch.Tensor]:
+        video_ids, segment_ids, input_ids = tuple([instance[key] for instance in instances] for key in ("video_id", "segment_id", "input_ids"))
+        input_ids = torch.nn.utils.rnn.pad_sequence(
+            input_ids,
+            batch_first=True,
+            padding_value=self.tokenizer.pad_token_id)
+        input_ids = input_ids[:, :self.tokenizer.model_max_length]
+        batch = dict(
+            video_ids=video_ids,
+            segment_ids=segment_ids,
+            input_ids=input_ids,
+            # attention_mask=input_ids.ne(self.tokenizer.pad_token_id),
+        )
 
-        new_list_images = []
-        for images in list_images:
-            for image in images:
-                new_list_images.append(image)
-        list_images = new_list_images
-        batch["images"] = list_images
-    else:
-        raise ValueError(f"Image mismatched: {instances}")
-
-    if all("image_attention_masks" in instance and instance["image_attention_masks"] for instance in instances):
+        if all("images" in instance and instance["images"] for instance in instances):
+            list_images = [instance["images"] for instance in instances]
+            new_list_images = []
+            for images in list_images:
+                for image in images:
+                    new_list_images.append(image)
+            list_images = new_list_images     
+            batch["images"] = list_images         
+        else:
+            raise ValueError(f"Image mismatched: {instances}")
+        
+        if all("image_attention_masks" in instance and instance["image_attention_masks"] for instance in instances):
             list_masks = [instance["image_attention_masks"] for instance in instances]
             new_list_masks = []
             for masks in list_masks:
@@ -143,10 +153,10 @@ def DataCollatorForSupervisedDataset(instances: Sequence[Dict]):
                     new_list_masks.append(mask)
             list_masks = new_list_masks
             batch["image_attention_masks"] = list_masks
-    else:
-        raise ValueError(f"Image attention masks mismatched: {instances}")
-
-    return batch
+        else:
+            raise ValueError(f"Image attention masks mismatched: {instances}")
+        
+        return batch
         
 
 def inference(args):
@@ -164,15 +174,16 @@ def inference(args):
                                         video_processor=video_processor,
                                         model_config=model.config)
     
-    wts_dataloader = DataLoader(wts_dataset, collate_fn=DataCollatorForSupervisedDataset)
+    wts_datacollator = DataCollatorForSupervisedDataset(tokenizer)
+    wts_dataloader = DataLoader(wts_dataset, collate_fn=wts_datacollator)
 
     with torch.inference_mode():
-        for sample in wts_dataloader:
-            video_id = sample["video_id"]
-            segment_id = sample["segment_id"]
-            input_ids = sample["input_ids"]
-            images = sample["images"]
-            image_attention_masks = sample["image_attention_masks"]
+        for batch in wts_dataloader:
+            video_ids = batch["video_ids"]
+            segment_ids = batch["segment_ids"]
+            input_ids = batch["input_ids"]
+            images = batch["images"]
+            image_attention_masks = batch["image_attention_masks"]
 
             output_ids = model.generate(
                 inputs=input_ids,
@@ -185,24 +196,21 @@ def inference(args):
                 use_cache=True,
             )
             outputs = tokenizer.batch_decode(output_ids, skip_special_tokens=True)[0].strip()
-
-            if video_id in results:
-                results[video_id].append({
-                    "labels": [str(segment_id)],
-                    f"caption_{args.object}": outputs 
-                })
+            print(outputs)
+            # if video_id in results:
+            #     results[video_id].append({
+            #         "labels": [str(segment_id)],
+            #         f"caption_{args.object}": outputs 
+            #     })
             
-            else:
-                results[video_id] = [{
-                    "labels": [str(segment_id)],
-                    f"caption_{args.object}": outputs
-                }]
+            # else:
+            #     results[video_id] = [{
+            #         "labels": [str(segment_id)],
+            #         f"caption_{args.object}": outputs
+            #     }]
         
-        with open(args.output_path, "w") as f:
-            json.dump(results, f, indent=4)
-
-
-
+        # with open(args.output_path, "w") as f:
+        #     json.dump(results, f, indent=4)
 
 
 if __name__ == "__main__":
