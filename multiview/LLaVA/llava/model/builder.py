@@ -39,8 +39,6 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
     if device != "cuda":
         kwargs['device_map'] = {"": device}
 
-    print(f"DEBUG --- kwargs['device_map']:", kwargs['device_map'])
-
     if load_8bit:
         kwargs['load_in_8bit'] = True
     elif load_4bit:
@@ -53,9 +51,6 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
         )
     else:
         kwargs['torch_dtype'] = torch.float32
-
-    print(f"DEBUG --- kwargs['device_map']:", 'load_in_8bit' in kwargs)
-
 
     if use_flash_attn:
         kwargs['attn_implementation'] = 'flash_attention_2'
@@ -71,6 +66,9 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
 
             print("DEBUG --- model", model)
             token_num, tokem_dim = model.lm_head.out_features, model.lm_head.in_features
+            print(token_num)
+            print(tokem_dim)
+            print(model.lm_head.weight.shape)
             if model.lm_head.weight.shape[0] != token_num:
                 print("DEBUG --- lm_head empty")
                 model.lm_head.weight = torch.nn.Parameter(torch.empty(token_num, tokem_dim, device=model.device, dtype=model.dtype))
@@ -85,31 +83,29 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
             adapter_state_dict = {(k[11:] if k.startswith('base_model.') else k): v for k, v in adapter_state_dict.items()}
             adapter_state_dict = {(k[6:] if k.startswith('model.model.') else k): v for k, v in adapter_state_dict.items()}
             
-            for key in adapter_state_dict:
-                print(f"{key} --- {adapter_state_dict[key].shape}")
-            print(model.model.multiview_ensembler.view_position_embedding.weight.shape)
-            print(model.model.multiview_ensembler.frame_position_embedding.weight.shape)
-            print(model.model.multiview_ensembler.attention.qkv_projection.weight.shape)
-            print(model.model.multiview_ensembler.attention.qkv_projection.bias.shape)
-            print(model.model.multiview_ensembler.attention.o_projection.weight.shape)
-            print(model.model.multiview_ensembler.attention.o_projection.bias.shape)
-            print(model.model.multiview_ensembler.view_merger.weight.shape)
-            print(model.model.multiview_ensembler.view_merger.bias.shape)
-            print(model.model.multiview_ensembler.layer_norm1.weight.shape)
-            print(model.model.multiview_ensembler.layer_norm1.bias.shape)
-            print(model.model.multiview_ensembler.feedforward.fc1.weight.shape)
-            print(model.model.multiview_ensembler.feedforward.fc1.bias.shape)
-            print(model.model.multiview_ensembler.feedforward.fc2.weight.shape)
-            print(model.model.multiview_ensembler.feedforward.fc2.bias.shape)
-            print(model.model.multiview_ensembler.layer_norm2.weight.shape)
-            print(model.model.multiview_ensembler.layer_norm2.bias.shape)
-            print(model.model.mm_projector[0].weight.shape)
+            # for key in adapter_state_dict:
+            #     print(f"{key} --- {adapter_state_dict[key].shape}")
+            # print(model.model.multiview_ensembler.view_position_embedding.weight.shape)
+            # print(model.model.multiview_ensembler.frame_position_embedding.weight.shape)
+            # print(model.model.multiview_ensembler.attention.qkv_projection.weight.shape)
+            # print(model.model.multiview_ensembler.attention.qkv_projection.bias.shape)
+            # print(model.model.multiview_ensembler.attention.o_projection.weight.shape)
+            # print(model.model.multiview_ensembler.attention.o_projection.bias.shape)
+            # print(model.model.multiview_ensembler.view_merger.weight.shape)
+            # print(model.model.multiview_ensembler.view_merger.bias.shape)
+            # print(model.model.multiview_ensembler.layer_norm1.weight.shape)
+            # print(model.model.multiview_ensembler.layer_norm1.bias.shape)
+            # print(model.model.multiview_ensembler.feedforward.fc1.weight.shape)
+            # print(model.model.multiview_ensembler.feedforward.fc1.bias.shape)
+            # print(model.model.multiview_ensembler.feedforward.fc2.weight.shape)
+            # print(model.model.multiview_ensembler.feedforward.fc2.bias.shape)
+            # print(model.model.multiview_ensembler.layer_norm2.weight.shape)
+            # print(model.model.multiview_ensembler.layer_norm2.bias.shape)
+            # print(model.model.mm_projector[0].weight.shape)
 
             model.load_state_dict(adapter_state_dict, strict=False)
 
-            print(model.model.mm_projector[0].weight.shape)
-
-
+            # print(model.model.mm_projector[0].weight.shape)
  
             print('Loading LoRA weights...')
             model = PeftModel.from_pretrained(model, model_path)
