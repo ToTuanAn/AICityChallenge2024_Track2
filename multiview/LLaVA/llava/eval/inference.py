@@ -133,11 +133,11 @@ def inference(args):
 
     with torch.inference_mode():
         for sample in wts_dataloader:
-            video_id = sample["video_id"]
-            segment_id = sample["segment_id"]
-            input_ids = sample["input_ids"]
-            images = sample["images"]
-            image_attention_masks = sample["image_attention_masks"]
+            video_id = sample["video_id"][0]
+            segment_id = sample["segment_id"][0]
+            input_ids = sample["input_ids"][0]
+            images = sample["images"][0]
+            image_attention_masks = sample["image_attention_masks"][0]
 
             output_ids = model.generate(
                 inputs=input_ids,

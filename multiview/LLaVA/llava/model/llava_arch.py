@@ -262,6 +262,7 @@ class LlavaMetaForCausalLM(ABC):
         print("DEBUG --- video_attention_masks", video_attention_masks.shape)
 
         if getattr(videos, "ndim", 0) == 5:
+            print("DEBUG --- not encode videos")
             video_features = self.encode_videos(videos) # (b, t, num_patches_pooled, hidden_size_pooled)
             video_features = rearrange(video_features, "(b v) t n d -> b v t (n d)", v=NUM_CAMERA_VIEWS) # (b, num_camera_views, t, num_patches_pooled, hidden_size_pooled)
             video_attention_masks = rearrange(video_attention_masks, "(b v) t -> b v t", v=NUM_CAMERA_VIEWS)
