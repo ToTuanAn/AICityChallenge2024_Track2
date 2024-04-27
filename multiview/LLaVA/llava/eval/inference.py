@@ -114,6 +114,37 @@ class LazySupervisedDataset(Dataset):
             return data_dict 
         
 
+def DataCollatorForSupervisedDataset(instances: Sequence[Dict]):
+    input_ids = [instance["input_ids"] for instance in instances]
+
+    batch = dict(input_ids=input_ids)
+    
+    if all("image" in instance and instance["image"] for instance in instances):
+        list_images = [instance["image"] for instance in instances]
+
+        new_list_images = []
+        for images in list_images:
+            for image in images:
+                new_list_images.append(image)
+        list_images = new_list_images
+        batch["images"] = list_images
+    else:
+        raise ValueError(f"Image mismatched: {instances}")
+
+    if all("image_attention_masks" in instance and instance["image_attention_masks"] for instance in instances):
+            list_masks = [instance["image_attention_masks"] for instance in instances]
+            new_list_masks = []
+            for masks in list_masks:
+                for mask in masks:
+                    new_list_masks.append(mask)
+            list_masks = new_list_masks
+            batch["image_attention_masks"] = list_masks
+    else:
+        raise ValueError(f"Image attention masks mismatched: {instances}")
+
+    return batch
+        
+
 def inference(args):
     disable_torch_init()
 
@@ -129,7 +160,7 @@ def inference(args):
                                         video_processor=video_processor,
                                         model_config=model.config)
     
-    wts_dataloader = DataLoader(wts_dataset)
+    wts_dataloader = DataLoader(wts_dataset, collate_fn=DataCollatorForSupervisedDataset)
 
     with torch.inference_mode():
         for sample in wts_dataloader:
