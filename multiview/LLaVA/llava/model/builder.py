@@ -39,6 +39,8 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
     if device != "cuda":
         kwargs['device_map'] = {"": device}
 
+    print(kwargs['device_map'])
+
     if load_8bit:
         kwargs['load_in_8bit'] = True
     elif load_4bit:
