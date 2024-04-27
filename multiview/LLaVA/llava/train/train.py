@@ -1090,7 +1090,7 @@ def train(attn_implementation=None):
                 if hasattr(module, 'weight'):
                     if training_args.bf16 and module.weight.dtype == torch.float32:
                         module = module.to(torch.bfloat16)
-                    elif 'embed_tokens' in name and training_args.fp16 and module.weight.dtype == torch.float32:
+                    elif training_args.fp16 and module.weight.dtype == torch.float32:
                         module = module.to(torch.float16)
 
     data_module = make_supervised_data_module(tokenizer=tokenizer,
