@@ -2,6 +2,7 @@ import os
 import json
 import copy
 import argparse
+from tqdm import tqdm
 from typing import Dict, Sequence
 from dataclasses import dataclass
 
@@ -178,7 +179,7 @@ def inference(args):
     wts_dataloader = DataLoader(wts_dataset, collate_fn=wts_datacollator)
 
     with torch.inference_mode():
-        for batch in wts_dataloader:
+        for batch in tqdm(wts_dataloader):
             video_ids = batch["video_ids"]
             segment_ids = batch["segment_ids"]
             input_ids = batch["input_ids"]
