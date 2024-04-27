@@ -257,6 +257,10 @@ class LlavaMetaForCausalLM(ABC):
 
         videos = torch.stack(images) # b, c, t, h, w
         video_attention_masks = torch.stack(image_attention_masks) # b, t
+
+        print("DEBUG --- videos", videos.shape)
+        print("DEBUG --- video_attention_masks", video_attention_masks.shape)
+
         if getattr(videos, "ndim", 0) == 5:
             video_features = self.encode_videos(videos) # (b, t, num_patches_pooled, hidden_size_pooled)
             video_features = rearrange(video_features, "(b v) t n d -> b v t (n d)", v=NUM_CAMERA_VIEWS) # (b, num_camera_views, t, num_patches_pooled, hidden_size_pooled)
