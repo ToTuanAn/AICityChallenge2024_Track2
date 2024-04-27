@@ -73,6 +73,7 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
                 print("DEBUG --- lm_head empty")
                 model.lm_head.weight = torch.nn.Parameter(torch.empty(token_num, tokem_dim, device=model.device, dtype=model.dtype))
                 model.model.embed_tokens.weight = torch.nn.Parameter(torch.empty(token_num, tokem_dim, device=model.device, dtype=model.dtype))
+            print(model.lm_head.weight.shape)
 
             print('Loading mm_projector and multiview_ensembler weights...')
                 
