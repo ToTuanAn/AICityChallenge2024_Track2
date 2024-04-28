@@ -23,7 +23,7 @@ from .multimodal_encoder.builder import build_vision_tower, build_video_tower
 from .multimodal_projector.builder import build_vision_projector, build_multiview_ensembler
 
 from llava.constants import IGNORE_INDEX, IMAGE_TOKEN_INDEX, DEFAULT_IMAGE_PATCH_TOKEN, DEFAULT_IM_START_TOKEN, DEFAULT_IM_END_TOKEN, \
-                            NUM_CAMERA_VIEWS, NUM_PATCHES_POOLED, HIDDEN_SIZE_POOLED
+                            NUM_CAMERA_VIEWS, NUM_PATCHES_POOLED, HIDDEN_SIZE_POOLED, MAX_VIDEO_LENGTH
 
 from llava.mm_utils import get_anyres_image_grid_shape
 
@@ -42,7 +42,7 @@ class LlavaMetaModel:
             
             if getattr(config, "mm_video_tower"):
                 self.video_tower = build_video_tower(config, delay_load=True)
-                self.multiview_ensembler = build_multiview_ensembler(NUM_PATCHES_POOLED * HIDDEN_SIZE_POOLED, self.video_tower.config.vision_config.num_frames)
+                self.multiview_ensembler = build_multiview_ensembler(NUM_PATCHES_POOLED * HIDDEN_SIZE_POOLED, MAX_VIDEO_LENGTH)
             
             self.pooling = nn.AdaptiveAvgPool2d((NUM_PATCHES_POOLED, HIDDEN_SIZE_POOLED)) 
     
@@ -135,7 +135,7 @@ class LlavaMetaModel:
                                              getattr(video_tower, "hidden_size", -1))
             num_patches = max(getattr(vision_tower, "num_patches", -1),
                               getattr(video_tower, "num_patches", -1))
-        num_frames = video_tower.config.vision_config.num_frames # bruh
+        num_frames = MAX_VIDEO_LENGTH # bruh
         ###########################################################################################
             
         def get_w(weights, keyword):
