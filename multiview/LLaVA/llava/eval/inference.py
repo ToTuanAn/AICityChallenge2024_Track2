@@ -64,14 +64,21 @@ def preprocess_v1(sources,
 
 
 class LazySupervisedDataset(Dataset):
-    def __init__(self, data_path: str,
+    def __init__(self, data_folder: str,
                  video_folder: str,
                  tokenizer: transformers.PreTrainedTokenizer,
                  video_processor,
                  model_config: transformers.PretrainedConfig,
                  ):
         super(LazySupervisedDataset, self).__init__()
-        self.list_data_dict = json.load(open(data_path, "r"))
+        data_files = os.listdir(data_folder)
+        data_paths = [os.path.join(data_folder, data_file) for data_file in data_files]
+        list_data_dict = []
+
+        for data_path in data_paths:
+            data = json.load(open(data_path, "r"))
+            list_data_dict.extend(data)
+
         self.video_folder = video_folder
     
         self.tokenizer = tokenizer
@@ -169,7 +176,7 @@ def inference(args):
         args.model_path, args.model_base, model_name, args.offload_folder
     )
 
-    wts_dataset = LazySupervisedDataset(data_path=args.data_path,
+    wts_dataset = LazySupervisedDataset(data_folder=args.data_folder,
                                         video_folder=args.video_folder,
                                         tokenizer=tokenizer,
                                         video_processor=video_processor,
@@ -180,8 +187,8 @@ def inference(args):
 
     with torch.inference_mode():
         for batch in tqdm(wts_dataloader):
-            video_ids = batch["video_ids"]
-            segment_ids = batch["segment_ids"]
+            video_id = batch["video_ids"][0]
+            segment_id = batch["segment_ids"][0]
             input_ids = batch["input_ids"]
             images = batch["images"]
             image_attention_masks = batch["image_attention_masks"]
@@ -192,26 +199,24 @@ def inference(args):
                 image_attention_masks=image_attention_masks,
                 do_sample=True if args.temperature > 0 else False,
                 temperature=args.temperature,
-                top_p=args.top_p,
-                num_beams=args.num_beams,
+                max_new_tokens=args.max_new_tokens,
                 use_cache=True,
             )
             outputs = tokenizer.batch_decode(output_ids, skip_special_tokens=True)[0].strip()
-            print(outputs)
-            # if video_id in results:
-            #     results[video_id].append({
-            #         "labels": [str(segment_id)],
-            #         f"caption_{args.object}": outputs 
-            #     })
+            if video_id in results:
+                results[video_id].append({
+                    "labels": [str(segment_id)],
+                    f"caption_{args.object_type}": outputs 
+                })
             
-            # else:
-            #     results[video_id] = [{
-            #         "labels": [str(segment_id)],
-            #         f"caption_{args.object}": outputs
-            #     }]
+            else:
+                results[video_id] = [{
+                    "labels": [str(segment_id)],
+                    f"caption_{args.object_type}": outputs
+                }]
         
-        # with open(args.output_path, "w") as f:
-        #     json.dump(results, f, indent=4)
+            with open(args.output_path, "w") as f:
+                json.dump(results, f, indent=4)
 
 
 if __name__ == "__main__":
@@ -219,13 +224,12 @@ if __name__ == "__main__":
     parser.add_argument("--model-path", type=str, default="facebook/opt-350m")
     parser.add_argument("--model-base", type=str, default="lmsys/vicuna-7b-v1.5")
     parser.add_argument("--offload-folder", type=str, default=None)  
-    parser.add_argument("--data-path", type=str, default=None)
+    parser.add_argument("--data-folder", type=str, default=None)
     parser.add_argument("--output-path", type=str, default=None)
     parser.add_argument("--video-folder", type=str, default=None)
-    parser.add_argument("--temperature", type=float, default=0.2)
-    parser.add_argument("--top_p", type=float, default=None)
-    parser.add_argument("--num_beams", type=int, default=1)
-    parser.add_argument("--max_new_tokens", type=int, default=512)
+    parser.add_argument("--temperature", type=float, default=0.1)
+    parser.add_argument("--max_new_tokens", type=int, default=1024)
+    parser.add_argument("--object-type", type=str, default=None)
     args = parser.parse_args()
 
     inference(args)
