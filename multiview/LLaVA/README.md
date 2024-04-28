@@ -112,7 +112,7 @@ your_output_folder /
 
 ### Inference
 1. Preprocess the test dataset as correspoding to the train dataset
-2. Inference notebook on Kaggle: [INFERENCE NOTEBOOK](https://www.kaggle.com/code/anttun/training-single-view-model/edit)
+2. Inference notebook on Kaggle: [INFERENCE NOTEBOOK](https://github.com/ToTuanAn/AICityChallenge2024_Track2/tree/main/multiview/LLaVA/notebooks/infer.ipynb)
 3. Adjust some arguments below to fit with your case. 
 ```
 --model-path: the HuggingFace repo's name of the trained model.
