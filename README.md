@@ -98,7 +98,7 @@ bash ../scripts/get_submission.sh
 Please check [Motion-Blur Link](https://github.com/ToTuanAn/AICityChallenge2024_Track2/blob/main/motion_blur/README.md).
 
 ## Multi-view
-[To be updated]
+Please check [Multiview Link](https://github.com/ToTuanAn/AICityChallenge2024_Track2/blob/main/multiview/LLaVA/README.md).
 
 ## Acknowledgement
 We would like to thank the [Vid2Seq](https://github.com/antoyang/VidChapters) repository for their outstanding video captioning.
